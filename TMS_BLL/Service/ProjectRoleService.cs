@@ -5,6 +5,13 @@ using TMS_BLL.IService;
 
 namespace TMS_BLL.Service
 {
+    public static class ProjectRoles
+    {
+        public const int ProjectManager = 1;
+        public const int Member = 2;
+        public const int Viewer = 3;
+    }
+
     public class ProjectRoleService : IProjectRoleService
     {
         private readonly IProjectRoleRepository _projectRoleRepository;

@@ -64,7 +64,10 @@ namespace TMS_BLL.Service
             {
                 var bytes = Encoding.UTF8.GetBytes(password);
                 var hash = sha.ComputeHash(bytes);
-                return Convert.ToBase64String(hash);
+                var sb = new StringBuilder();
+                foreach (var b in hash)
+                    sb.Append(b.ToString("x2"));
+                return sb.ToString();
             }
         }
     }

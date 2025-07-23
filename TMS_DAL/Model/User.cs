@@ -14,6 +14,7 @@ namespace TMS_DAL.Model
         public string Email { get; set; }
         public string PasswordHash { get; set; }
         public DateTime DateCreated { get; set; }
+        public bool IsAdmin { get; set; }
         public ICollection<ProjectRole> ProjectRoles { get; set; }
         public ICollection<ProjectTask> ProjectTasks { get; set; }
     }

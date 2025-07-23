@@ -54,6 +54,35 @@ namespace TMS_DAL.Data
             modelBuilder.Entity<ProjectRole>().HasKey(pr => pr.ProjectRoleId);
             modelBuilder.Entity<Attachment>().HasKey(a => a.AttachmentId);
 
+            modelBuilder.Entity<User>().HasData(
+                new User
+                {
+                    UserId = 1,
+                    Username = "admin",
+                    FullName = "Admin User",
+                    Email = "admin@example.com",
+                    PasswordHash = "0192023a7bbd73250516f069df18b500c33910a2d4d4074ec5b0d1b0e5b0c1c6",
+                    DateCreated = DateTime.Now,
+                    IsAdmin = true
+                },
+                new User
+                {
+                    UserId = 2,
+                    Username = "user",
+                    FullName = "Normal User",
+                    Email = "user@example.com",
+                    PasswordHash = "6ad14ba9986e3615423dfca256d04e3f735357c3558b8b4319c49a23ea8bc99c", 
+                    DateCreated = DateTime.Now,
+                    IsAdmin = false
+                }
+            );
+
+            modelBuilder.Entity<Role>().HasData(
+                new Role { RoleId = 1, RoleName = "Project Manager", Description = "Manages the project and team members" },
+                new Role { RoleId = 2, RoleName = "Member", Description = "Project team member" },
+                new Role { RoleId = 3, RoleName = "Viewer", Description = "Can view project information only" }
+            );
+
             modelBuilder.Entity<ProjectRole>()
                 .HasOne(pr => pr.Project)
                 .WithMany(p => p.ProjectRoles)
