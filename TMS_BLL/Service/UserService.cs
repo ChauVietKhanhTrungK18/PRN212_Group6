@@ -19,7 +19,7 @@ namespace TMS_BLL.Service
         public bool Register(string username, string email, string password, string fullName)
         {
             if (_userRepository.GetByUsername(username) != null || _userRepository.GetByEmail(email) != null)
-                return false; // User already exists
+                return false; 
 
             var user = new User
             {

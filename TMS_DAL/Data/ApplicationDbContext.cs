@@ -61,7 +61,7 @@ namespace TMS_DAL.Data
                     Username = "admin",
                     FullName = "Admin User",
                     Email = "admin@example.com",
-                    PasswordHash = "0192023a7bbd73250516f069df18b500c33910a2d4d4074ec5b0d1b0e5b0c1c6",
+                    PasswordHash = "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9",
                     DateCreated = DateTime.Now,
                     IsAdmin = true
                 },
@@ -71,7 +71,7 @@ namespace TMS_DAL.Data
                     Username = "user",
                     FullName = "Normal User",
                     Email = "user@example.com",
-                    PasswordHash = "6ad14ba9986e3615423dfca256d04e3f735357c3558b8b4319c49a23ea8bc99c", 
+                    PasswordHash = "e606e38b0d8c19b24cf0ee3808183162ea7cd63ff7912dbb22b5e803286b4446", 
                     DateCreated = DateTime.Now,
                     IsAdmin = false
                 }

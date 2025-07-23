@@ -16,9 +16,10 @@ namespace Task_Management_System
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow()
+        public MainWindow(string userFullName)
         {
             InitializeComponent();
+            //txtWelcome.Text = $"Welcome, {userFullName}!";
         }
     }
 }
