@@ -16,9 +16,9 @@ namespace TMS_DAL.Model
         public string Status { get; set; }
         public DateTime DateCreated { get; set; }
 
-        // Người tạo dự án (Manager)
         public int ManagerId { get; set; }
         public User Manager { get; set; }
+        public bool IsDeleted { get; set; }
 
         public ICollection<ProjectMember> ProjectMembers { get; set; }
         public ICollection<ProjectTask> ProjectTasks { get; set; }

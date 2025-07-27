@@ -15,11 +15,10 @@ namespace TMS_DAL.Model
         public string PasswordHash { get; set; }
         public DateTime DateCreated { get; set; }
 
-        // Role hệ thống
         public int RoleId { get; set; }
         public Role Role { get; set; }
+        public bool IsDeleted { get; set; }
 
-        // Các dự án mà người này tham gia
         public ICollection<ProjectMember> ProjectMembers { get; set; }
         public ICollection<TaskAssignment> TaskAssignments { get; set; }
         public ICollection<Attachment> Attachments { get; set; }

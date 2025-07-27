@@ -17,6 +17,7 @@ namespace TMS_DAL.Model
 
         public int ProjectId { get; set; }
         public Project Project { get; set; }
+        public bool IsDeleted { get; set; }
 
         public ICollection<TaskAssignment> TaskAssignments { get; set; }
         public ICollection<Attachment> Attachments { get; set; }
