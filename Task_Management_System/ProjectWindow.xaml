@@ -1,0 +1,49 @@
+<Window x:Class="Task_Management_System.ProjectWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Project Management" Height="450" Width="800">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+            <StackPanel Margin="0,0,10,0">
+                <TextBlock Text="Project Name"/>
+                <TextBox x:Name="txtProjectName" Width="150"/>
+            </StackPanel>
+            <StackPanel Margin="0,0,10,0">
+                <TextBlock Text="Description"/>
+                <TextBox x:Name="txtDescription" Width="200"/>
+            </StackPanel>
+            <StackPanel Margin="0,0,10,0">
+                <TextBlock Text="Start Date"/>
+                <DatePicker x:Name="dpStartDate" Width="120"/>
+            </StackPanel>
+            <StackPanel Margin="0,0,10,0">
+                <TextBlock Text="End Date"/>
+                <DatePicker x:Name="dpEndDate" Width="120"/>
+            </StackPanel>
+            <Button x:Name="btnCreateProject" Content="Create" Width="80" Margin="10,0,0,0" Click="btnCreateProject_Click"/>
+        </StackPanel>
+        <DataGrid x:Name="dgProjects" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" SelectionChanged="dgProjects_SelectionChanged">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Project Name" Binding="{Binding ProjectName}" Width="*"/>
+                <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="2*"/>
+                <DataGridTextColumn Header="Start Date" Binding="{Binding StartDate, StringFormat=MM/dd/yyyy}" Width="*"/>
+                <DataGridTextColumn Header="End Date" Binding="{Binding EndDate, StringFormat=MM/dd/yyyy}" Width="*"/>
+                <DataGridTemplateColumn Header="Actions" Width="150">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <Button Content="Edit" Width="50" Margin="2" Click="btnEditProject_Click"/>
+                                <Button Content="Delete" Width="50" Margin="2" Click="btnDeleteProject_Click"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+        <Button x:Name="btnUpdateProject" Content="Update" Width="80" Margin="10,0,0,0" Click="btnUpdateProject_Click" Visibility="Collapsed"/>
+    </Grid>
+</Window> 

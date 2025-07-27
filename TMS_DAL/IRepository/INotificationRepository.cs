@@ -10,5 +10,6 @@ namespace TMS_DAL.IRepository
         void Add(Notification notification);
         void MarkAsRead(int notificationId);
         void Delete(int notificationId);
+        IEnumerable<Notification> GetAll();
     }
 } 

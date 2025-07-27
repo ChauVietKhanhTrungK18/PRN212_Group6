@@ -18,5 +18,6 @@ namespace TMS_BLL.Service
         public void Add(Notification notification) => _notificationRepository.Add(notification);
         public void MarkAsRead(int notificationId) => _notificationRepository.MarkAsRead(notificationId);
         public void Delete(int notificationId) => _notificationRepository.Delete(notificationId);
+        public IEnumerable<Notification> GetAll() => _notificationRepository.GetAll();
     }
 } 

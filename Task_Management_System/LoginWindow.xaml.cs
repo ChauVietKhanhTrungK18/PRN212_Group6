@@ -28,8 +28,16 @@ namespace Task_Management_System
             var user = _userService.Login(username, password);
             if (user != null)
             {
-                MainWindow main = new MainWindow(user.FullName);
-                main.Show();
+                if (user.IsAdmin)
+                {
+                    var adminWindow = new AdminWindow();
+                    adminWindow.Show();
+                }
+                else
+                {
+                    var projectWindow = new ProjectWindow();
+                    projectWindow.Show();
+                }
                 this.Close();
             }
             else

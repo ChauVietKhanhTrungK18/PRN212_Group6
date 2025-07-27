@@ -28,5 +28,6 @@ namespace TMS_BLL.Service
                 _taskRepository.Update(task);
             }
         }
+        public IEnumerable<ProjectTask> GetAll() => _taskRepository.GetAll();
     }
 } 

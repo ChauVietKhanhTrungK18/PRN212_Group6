@@ -35,5 +35,6 @@ namespace TMS_DAL.Repository
                 _context.SaveChanges();
             }
         }
+        public IEnumerable<Notification> GetAll() => _context.Notifications.ToList();
     }
 } 

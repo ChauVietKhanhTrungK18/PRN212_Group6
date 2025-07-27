@@ -7,7 +7,8 @@ namespace TMS_BLL.IService
     {
         bool Register(string username, string email, string password, string fullName);
         User Login(string username, string password);
-        bool UpdateProfile(int userId, string fullName, string email, string password);
+        bool UpdateProfile(int userId, string fullName, string email);
+        bool ChangePassword(int userId, string oldPassword, string newPassword);
         User GetById(int userId);
         IEnumerable<User> GetAll();
         void Delete(int userId);

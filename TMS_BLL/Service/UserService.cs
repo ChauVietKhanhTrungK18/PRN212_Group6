@@ -5,6 +5,7 @@ using System.Text;
 using TMS_DAL.Model;
 using TMS_DAL.IRepository;
 using TMS_BLL.IService;
+using System.Windows;
 
 namespace TMS_BLL.Service
 {
@@ -42,14 +43,22 @@ namespace TMS_BLL.Service
             return null;
         }
 
-        public bool UpdateProfile(int userId, string fullName, string email, string password)
+        public bool UpdateProfile(int userId, string fullName, string email)
         {
             var user = _userRepository.GetById(userId);
             if (user == null) return false;
             user.FullName = fullName;
             user.Email = email;
-            if (!string.IsNullOrEmpty(password))
-                user.PasswordHash = HashPassword(password);
+            _userRepository.Update(user);
+            return true;
+        }
+
+        public bool ChangePassword(int userId, string oldPassword, string newPassword)
+        {
+            var user = _userRepository.GetById(userId);
+            if (user == null) return false;
+            if (user.PasswordHash != HashPassword(oldPassword)) return false;
+            user.PasswordHash = HashPassword(newPassword);
             _userRepository.Update(user);
             return true;
         }
