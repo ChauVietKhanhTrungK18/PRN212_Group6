@@ -17,5 +17,8 @@ namespace TMS_DAL.Model
         public User AssignedUser { get; set; }
         public int ProjectId { get; set; }
         public Project Project { get; set; }
+        public int? AssigneeId { get; set; }
+        public User Assignee { get; set; }
+        public DateTime DueDate { get; set; }
     }
 }

@@ -8,6 +8,7 @@ namespace TMS_DAL.IRepository
         ProjectTask GetById(int taskId);
         IEnumerable<ProjectTask> GetByProjectId(int projectId);
         IEnumerable<ProjectTask> GetByAssignedUserId(int userId);
+        IEnumerable<ProjectTask> GetAll();
         void Add(ProjectTask task);
         void Update(ProjectTask task);
         void Delete(int taskId);

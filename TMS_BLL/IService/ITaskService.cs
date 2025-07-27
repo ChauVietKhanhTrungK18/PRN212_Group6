@@ -12,5 +12,6 @@ namespace TMS_BLL.IService
         void Update(ProjectTask task);
         void Delete(int taskId);
         void UpdateStatus(int taskId, string status);
+        IEnumerable<ProjectTask> GetAll();
     }
 } 
