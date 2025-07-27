@@ -1,20 +1,400 @@
 <Window x:Class="Task_Management_System.RegisterWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Register" Height="400" Width="400" WindowStartupLocation="CenterScreen">
-    <Grid Margin="20">
-        <StackPanel VerticalAlignment="Center">
-            <TextBlock Text="Username"/>
-            <TextBox x:Name="txtUsername" Margin="0,5"/>
-            <TextBlock Text="Full Name" Margin="0,10,0,0"/>
-            <TextBox x:Name="txtFullName" Margin="0,5"/>
-            <TextBlock Text="Email" Margin="0,10,0,0"/>
-            <TextBox x:Name="txtEmail" Margin="0,5"/>
-            <TextBlock Text="Password" Margin="0,10,0,0"/>
-            <PasswordBox x:Name="txtPassword" Margin="0,5"/>
-            <TextBlock Text="Confirm Password" Margin="0,10,0,0"/>
-            <PasswordBox x:Name="txtConfirmPassword" Margin="0,5"/>
-            <Button Content="Register" Click="BtnRegister_Click" Margin="0,15,0,0" Height="35"/>
-        </StackPanel>
+        Title="Register" Height="850" Width="700" WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize" Background="Transparent" AllowsTransparency="True" WindowStyle="None">
+
+    <Window.Resources>
+        <!-- Glass Effect Style -->
+        <Style x:Key="GlassCard" TargetType="Border">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <SolidColorBrush Color="White" Opacity="0.15"/>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="BorderBrush">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#80FFFFFF" Offset="0"/>
+                        <GradientStop Color="#40FFFFFF" Offset="1"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="20"/>
+        </Style>
+
+        <!-- Fixed Modern TextBox Style -->
+        <Style x:Key="ModernTextBox" TargetType="TextBox">
+            <Setter Property="Height" Value="45"/>
+            <Setter Property="Padding" Value="15,12"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontFamily" Value="Segoe UI Light"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="#40FFFFFF"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CaretBrush" Value="White"/>
+            <Setter Property="SelectionBrush" Value="#40FFFFFF"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="12">
+                            <ScrollViewer x:Name="PART_ContentHost" 
+                                        Focusable="False"
+                                        HorizontalScrollBarVisibility="Hidden"
+                                        VerticalScrollBarVisibility="Hidden"
+                                        Padding="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter Property="BorderBrush" Value="#80FFFFFF"/>
+                                <Setter Property="Background">
+                                    <Setter.Value>
+                                        <SolidColorBrush Color="White" Opacity="0.1"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="BorderBrush" Value="#60FFFFFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Fixed Modern PasswordBox Style -->
+        <Style x:Key="ModernPasswordBox" TargetType="PasswordBox">
+            <Setter Property="Height" Value="45"/>
+            <Setter Property="Padding" Value="15,12"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontFamily" Value="Segoe UI Light"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="#40FFFFFF"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CaretBrush" Value="White"/>
+            <Setter Property="SelectionBrush" Value="#40FFFFFF"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="PasswordBox">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="12">
+                            <ScrollViewer x:Name="PART_ContentHost" 
+                                        Focusable="False"
+                                        HorizontalScrollBarVisibility="Hidden"
+                                        VerticalScrollBarVisibility="Hidden"
+                                        Padding="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter Property="BorderBrush" Value="#80FFFFFF"/>
+                                <Setter Property="Background">
+                                    <Setter.Value>
+                                        <SolidColorBrush Color="White" Opacity="0.1"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="BorderBrush" Value="#60FFFFFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Floating Label Style -->
+        <Style x:Key="FloatingLabel" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontFamily" Value="Segoe UI Light"/>
+            <Setter Property="Foreground" Value="#B0FFFFFF"/>
+            <Setter Property="Margin" Value="5,0,0,5"/>
+            <Setter Property="FontWeight" Value="Light"/>
+        </Style>
+
+        <!-- Gradient Button Style -->
+        <Style x:Key="GradientButton" TargetType="Button">
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border CornerRadius="15">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                    <GradientStop Color="#667eea" Offset="0"/>
+                                    <GradientStop Color="#764ba2" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <Border.Effect>
+                                <DropShadowEffect Color="#40000000" Direction="270" 
+                                                ShadowDepth="3" BlurRadius="15" Opacity="0.3"/>
+                            </Border.Effect>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect Color="#60000000" Direction="270" 
+                                                        ShadowDepth="5" BlurRadius="20" Opacity="0.4"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Input Group Style -->
+        <Style x:Key="InputGroup" TargetType="StackPanel">
+            <Setter Property="Margin" Value="0,0,0,14"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <!-- Animated Background -->
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#667eea" Offset="0"/>
+                <GradientStop Color="#764ba2" Offset="0.5"/>
+                <GradientStop Color="#f093fb" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+
+        <!-- Floating Particles Effect -->
+        <Canvas>
+            <Ellipse Width="90" Height="90" Fill="#15FFFFFF" Canvas.Left="90" Canvas.Top="100">
+                <Ellipse.RenderTransform>
+                    <TranslateTransform x:Name="particle1"/>
+                </Ellipse.RenderTransform>
+                <Ellipse.Triggers>
+                    <EventTrigger RoutedEvent="Loaded">
+                        <BeginStoryboard>
+                            <Storyboard RepeatBehavior="Forever">
+                                <DoubleAnimation Storyboard.TargetName="particle1" 
+                                               Storyboard.TargetProperty="Y"
+                                               From="0" To="-15" Duration="0:0:4"
+                                               AutoReverse="True"/>
+                                <DoubleAnimation Storyboard.TargetName="particle1" 
+                                               Storyboard.TargetProperty="X"
+                                               From="0" To="8" Duration="0:0:5"
+                                               AutoReverse="True"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </Ellipse.Triggers>
+            </Ellipse>
+
+            <Ellipse Width="70" Height="70" Fill="#10FFFFFF" Canvas.Right="110" Canvas.Top="150">
+                <Ellipse.RenderTransform>
+                    <TranslateTransform x:Name="particle2"/>
+                </Ellipse.RenderTransform>
+                <Ellipse.Triggers>
+                    <EventTrigger RoutedEvent="Loaded">
+                        <BeginStoryboard>
+                            <Storyboard RepeatBehavior="Forever">
+                                <DoubleAnimation Storyboard.TargetName="particle2" 
+                                               Storyboard.TargetProperty="Y"
+                                               From="0" To="12" Duration="0:0:3.5"
+                                               AutoReverse="True"/>
+                                <DoubleAnimation Storyboard.TargetName="particle2" 
+                                               Storyboard.TargetProperty="X"
+                                               From="0" To="-10" Duration="0:0:4.5"
+                                               AutoReverse="True"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </Ellipse.Triggers>
+            </Ellipse>
+
+            <Ellipse Width="50" Height="50" Fill="#20FFFFFF" Canvas.Left="420" Canvas.Bottom="120">
+                <Ellipse.RenderTransform>
+                    <TranslateTransform x:Name="particle3"/>
+                </Ellipse.RenderTransform>
+                <Ellipse.Triggers>
+                    <EventTrigger RoutedEvent="Loaded">
+                        <BeginStoryboard>
+                            <Storyboard RepeatBehavior="Forever">
+                                <DoubleAnimation Storyboard.TargetName="particle3" 
+                                               Storyboard.TargetProperty="Y"
+                                               From="0" To="-18" Duration="0:0:4.5"
+                                               AutoReverse="True"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </Ellipse.Triggers>
+            </Ellipse>
+        </Canvas>
+
+        <!-- Main Glass Card -->
+        <Border Style="{StaticResource GlassCard}" 
+                Margin="60" 
+                Padding="50">
+            <Border.Effect>
+                <DropShadowEffect Color="#40000000" Direction="270" 
+                                ShadowDepth="10" BlurRadius="30" Opacity="0.3"/>
+            </Border.Effect>
+
+            <StackPanel VerticalAlignment="Center">
+                <!-- Logo/Icon Area -->
+                <Border Width="60" Height="60" 
+                           Margin="0,0,0,20"
+                           HorizontalAlignment="Center"
+                           CornerRadius="30">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#80FFFFFF" Offset="0"/>
+                            <GradientStop Color="#40FFFFFF" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Border.Effect>
+                        <DropShadowEffect Color="#30000000" Direction="270" 
+                                            ShadowDepth="3" BlurRadius="10" Opacity="0.2"/>
+                    </Border.Effect>
+                    <TextBlock Text="+" FontSize="28" FontWeight="Light" 
+                                  Foreground="White" HorizontalAlignment="Center" 
+                                  VerticalAlignment="Center"/>
+                </Border>
+
+                <!-- Welcome Text -->
+                <TextBlock Text="Create Account" 
+                              FontSize="24" 
+                              FontFamily="Segoe UI Light"
+                              FontWeight="Light"
+                              Foreground="White"
+                              HorizontalAlignment="Center" 
+                              Margin="0,0,0,5"/>
+
+                <TextBlock Text="Join our community today" 
+                              FontSize="12" 
+                              FontFamily="Segoe UI Light"
+                              Foreground="#B0FFFFFF"
+                              HorizontalAlignment="Center" 
+                              Margin="0,0,0,25"/>
+
+                <!-- Username Field -->
+                <StackPanel Style="{StaticResource InputGroup}">
+                    <TextBlock Text="USERNAME" Style="{StaticResource FloatingLabel}"/>
+                    <TextBox x:Name="txtUsername" Style="{StaticResource ModernTextBox}"/>
+                </StackPanel>
+
+                <!-- Full Name Field -->
+                <StackPanel Style="{StaticResource InputGroup}">
+                    <TextBlock Text="FULL NAME" Style="{StaticResource FloatingLabel}"/>
+                    <TextBox x:Name="txtFullName" Style="{StaticResource ModernTextBox}"/>
+                </StackPanel>
+
+                <!-- Email Field -->
+                <StackPanel Style="{StaticResource InputGroup}">
+                    <TextBlock Text="EMAIL ADDRESS" Style="{StaticResource FloatingLabel}"/>
+                    <TextBox x:Name="txtEmail" Style="{StaticResource ModernTextBox}"/>
+                </StackPanel>
+
+                <!-- Password Field -->
+                <StackPanel Style="{StaticResource InputGroup}">
+                    <TextBlock Text="PASSWORD" Style="{StaticResource FloatingLabel}"/>
+                    <PasswordBox x:Name="txtPassword" Style="{StaticResource ModernPasswordBox}"/>
+                </StackPanel>
+
+                <!-- Confirm Password Field -->
+                <StackPanel Style="{StaticResource InputGroup}">
+                    <TextBlock Text="CONFIRM PASSWORD" Style="{StaticResource FloatingLabel}"/>
+                    <PasswordBox x:Name="txtConfirmPassword" Style="{StaticResource ModernPasswordBox}"/>
+                </StackPanel>
+
+                <!-- Terms Agreement -->
+                <StackPanel Orientation="Horizontal" 
+                               HorizontalAlignment="Center"
+                               Margin="0,8,0,20">
+                    <CheckBox x:Name="chkAgreeTerms" 
+                                 VerticalAlignment="Center"
+                                 Margin="0,0,8,0">
+                        <CheckBox.Template>
+                            <ControlTemplate TargetType="CheckBox">
+                                <Border Width="18" Height="18" 
+                                           Background="Transparent"
+                                           BorderBrush="#60FFFFFF"
+                                           BorderThickness="1"
+                                           CornerRadius="3">
+                                    <Path x:Name="CheckMark"
+                                             Visibility="Collapsed"
+                                             Data="M2,6 L6,10 L14,2"
+                                             Stroke="White"
+                                             StrokeThickness="2"
+                                             HorizontalAlignment="Center"
+                                             VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsChecked" Value="True">
+                                        <Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </CheckBox.Template>
+                    </CheckBox>
+                    <TextBlock Text="I agree to the Terms &amp; Conditions" 
+                                  FontSize="12" 
+                                  FontFamily="Segoe UI Light"
+                                  Foreground="#B0FFFFFF"/>
+                </StackPanel>
+
+                <!-- Register Button -->
+                <Button Content="CREATE ACCOUNT" 
+                           Click="BtnRegister_Click" 
+                           Style="{StaticResource GradientButton}"
+                           Margin="0,0,0,15"/>
+
+                <!-- Footer -->
+                <TextBlock Text="Already have an account?" 
+                              FontSize="11" 
+                              FontFamily="Segoe UI Light"
+                              Foreground="#80FFFFFF"
+                              HorizontalAlignment="Center" 
+                              Margin="0,10,0,0"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Close Button -->
+        <Button Content="×" 
+                Width="30" Height="30"
+                HorizontalAlignment="Right" 
+                VerticalAlignment="Top"
+                Margin="15"
+                FontSize="18"
+                FontWeight="Light"
+                Foreground="White"
+                Background="Transparent"
+                BorderThickness="0"
+                Cursor="Hand"
+                Click="CloseButton_Click">
+            <Button.Template>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{TemplateBinding Background}" 
+                            CornerRadius="15">
+                        <ContentPresenter HorizontalAlignment="Center" 
+                                        VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#30FFFFFF"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Button.Template>
+        </Button>
     </Grid>
-</Window> 
+</Window>

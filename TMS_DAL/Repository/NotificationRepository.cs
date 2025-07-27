@@ -9,32 +9,37 @@ namespace TMS_DAL.Repository
     public class NotificationRepository : INotificationRepository
     {
         private readonly ApplicationDbContext _context;
+
         public NotificationRepository(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        public Notification GetById(int notificationId) => _context.Notifications.Find(notificationId);
-        public IEnumerable<Notification> GetByUserId(int userId) => _context.Notifications.Where(n => n.UserId == userId).ToList();
-        public void Add(Notification notification) { _context.Notifications.Add(notification); _context.SaveChanges(); }
-        public void MarkAsRead(int notificationId)
+        public IEnumerable<Notification> GetAll()
         {
-            var notification = _context.Notifications.Find(notificationId);
-            if (notification != null)
-            {
-                notification.IsRead = true;
-                _context.SaveChanges();
-            }
+            return _context.Notifications.ToList();
         }
-        public void Delete(int notificationId)
+
+        public Notification GetById(int id)
         {
-            var notification = _context.Notifications.Find(notificationId);
+            return _context.Notifications.Find(id);
+        }
+
+        public void Add(Notification notification)
+        {
+            _context.Notifications.Add(notification);
+        }
+
+        public void Delete(int id)
+        {
+            var notification = _context.Notifications.Find(id);
             if (notification != null)
-            {
                 _context.Notifications.Remove(notification);
-                _context.SaveChanges();
-            }
         }
-        public IEnumerable<Notification> GetAll() => _context.Notifications.ToList();
+
+        public void SaveChanges()
+        {
+            _context.SaveChanges();
+        }
     }
 } 

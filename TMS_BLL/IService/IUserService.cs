@@ -10,7 +10,9 @@ namespace TMS_BLL.IService
         bool UpdateProfile(int userId, string fullName, string email);
         bool ChangePassword(int userId, string oldPassword, string newPassword);
         User GetById(int userId);
-        IEnumerable<User> GetAll();
-        void Delete(int userId);
+        IEnumerable<User> GetAll(bool includeDeleted = false);
+        IEnumerable<User> GetByRole(int roleId, bool includeDeleted = false);
+        bool SetDeletedStatus(int userId, bool isDeleted);
+        bool UpdateRole(int userId, int roleId);
     }
 } 

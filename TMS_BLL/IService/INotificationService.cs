@@ -5,10 +5,9 @@ namespace TMS_BLL.IService
 {
     public interface INotificationService
     {
-        Notification GetById(int notificationId);
-        IEnumerable<Notification> GetByUserId(int userId);
+        IEnumerable<Notification> GetAll();
+        Notification GetById(int id);
         void Add(Notification notification);
-        void MarkAsRead(int notificationId);
-        void Delete(int notificationId);
+        void Delete(int id);
     }
 } 

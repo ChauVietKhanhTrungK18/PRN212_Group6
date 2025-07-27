@@ -1,17 +1,18 @@
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
+using TMS_BLL.IService;
 using TMS_BLL.Service;
 
 namespace Task_Management_System
 {
     public partial class RegisterWindow : Window
     {
-        private readonly UserService _userService;
+        private readonly IUserService _userService;
 
         public RegisterWindow()
         {
             InitializeComponent();
-            _userService = App.ServiceProvider.GetRequiredService<UserService>();
+            _userService = App.ServiceProvider.GetRequiredService<IUserService>();
         }
 
         private void BtnRegister_Click(object sender, RoutedEventArgs e)
@@ -45,6 +46,10 @@ namespace Task_Management_System
             {
                 MessageBox.Show("Username or Email already exists!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 } 

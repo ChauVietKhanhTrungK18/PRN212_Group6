@@ -24,10 +24,29 @@ namespace Task_Management_System
 
         private void LoadDashboard()
         {
-            //txtTotalMembers.Text = _userService.GetAll().Count(u => !u.IsAdmin).ToString();
-            txtTotalProjects.Text = _projectService.GetAll().Count().ToString();
-            txtTotalTasks.Text = _taskService.GetAll().Count().ToString();
-            //txtTotalNotifications.Text = _notificationService.GetAll().Count().ToString();
+            try
+            {
+                var users = _userService.GetAll();
+                txtTotalMembers.Text = users.Count(u => u.RoleId != 1).ToString();
+                txtTotalProjects.Text = _projectService.GetAll().Count().ToString();
+                txtTotalTasks.Text = _taskService.GetAll().Count().ToString();
+                txtTotalNotifications.Text = _notificationService.GetAll().Count().ToString();
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show($"Lỗi tải dữ liệu Dashboard: {ex.Message}",
+                                "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void btnManageAccounts_Click(object sender, RoutedEventArgs e)
+        {
+            var manageWindow = new ManageAccountsWindow
+            {
+                Owner = this
+            };
+            manageWindow.ShowDialog();
+            LoadDashboard();
         }
     }
 } 

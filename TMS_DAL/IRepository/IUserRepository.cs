@@ -8,9 +8,13 @@ namespace TMS_DAL.IRepository
         User GetById(int userId);
         User GetByUsername(string username);
         User GetByEmail(string email);
-        IEnumerable<User> GetAll();
+        IEnumerable<User> GetAll(bool includeDeleted = false);
+        IEnumerable<User> GetByRole(int roleId, bool includeDeleted = false);
         void Add(User user);
         void Update(User user);
-        void Delete(int userId);
+        void SetDeletedStatus(int userId, bool isDeleted);
+        bool ExistsByUsername(string username);
+        bool ExistsByEmail(string email);
+        void SaveChanges();
     }
 } 

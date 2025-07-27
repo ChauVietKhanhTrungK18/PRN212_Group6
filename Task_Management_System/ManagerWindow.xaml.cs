@@ -1,29 +1,38 @@
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 using TMS_BLL.IService;
-using TMS_BLL.Service;
 using TMS_DAL.Model;
 
 namespace Task_Management_System
 {
-    public partial class ProjectWindow : Window
+    /// <summary>
+    /// Interaction logic for ManagerWindow.xaml
+    /// </summary>
+    public partial class ManagerWindow : Window
     {
         private readonly IProjectService _projectService;
         private readonly IUserService _userService;
         private Project _selectedProject;
-        public ProjectWindow()
+        public ManagerWindow()
         {
             InitializeComponent();
-            // Initialize services
             _projectService = App.ServiceProvider.GetRequiredService<IProjectService>();
             _userService = App.ServiceProvider.GetRequiredService<IUserService>();
 
             LoadProjects();
         }
-
         private void LoadProjects()
         {
             try
@@ -153,5 +162,7 @@ namespace Task_Management_System
         {
             this.Close();
         }
+
     }
 }
+
