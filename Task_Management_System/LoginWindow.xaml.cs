@@ -1,17 +1,18 @@
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
+using TMS_BLL.IService;
 using TMS_BLL.Service;
 
 namespace Task_Management_System
 {
     public partial class LoginWindow : Window
     {
-        private readonly UserService _userService;
+        private readonly IUserService _userService;
 
         public LoginWindow()
         {
             InitializeComponent();
-            _userService = App.ServiceProvider.GetRequiredService<UserService>();
+            _userService = App.ServiceProvider.GetRequiredService<IUserService>();
         }
 
         private void BtnLogin_Click(object sender, RoutedEventArgs e)

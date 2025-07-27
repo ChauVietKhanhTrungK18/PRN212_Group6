@@ -1,9 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
-using TMS_DAL.Data;
-using TMS_DAL.Repository;
+using TMS_BLL.IService;
 using TMS_BLL.Service;
+using TMS_DAL.Data;
 using TMS_DAL.IRepository;
+using TMS_DAL.Repository;
 
 namespace Task_Management_System
 {
@@ -36,14 +37,15 @@ namespace Task_Management_System
             services.AddScoped<INotificationRepository, NotificationRepository>();
             services.AddScoped<IProjectRoleRepository, ProjectRoleRepository>();
             // Service
-            services.AddScoped<UserService>();
-            services.AddScoped<ProjectService>();
-            services.AddScoped<RoleService>();
-            services.AddScoped<TaskService>();
-            services.AddScoped<AttachmentService>();
-            services.AddScoped<NotificationService>();
-            services.AddScoped<ProjectRoleService>();
-            services.AddScoped<ReportService>();
+
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IProjectService, ProjectService>();
+            services.AddScoped<IRoleService, RoleService>();
+            services.AddScoped<ITaskService, TaskService>();
+            services.AddScoped<IAttachmentService, AttachmentService>();
+            services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<IProjectRoleService, ProjectRoleService>();
+            services.AddScoped<IReportService, ReportService>();
         }
     }
 }

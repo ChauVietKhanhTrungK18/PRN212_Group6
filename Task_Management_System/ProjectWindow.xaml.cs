@@ -1,132 +1,159 @@
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Controls;
+using TMS_BLL.IService;
 using TMS_BLL.Service;
 using TMS_DAL.Model;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Task_Management_System
 {
     public partial class ProjectWindow : Window
     {
-        private readonly ProjectService _projectService;
+        private readonly IProjectService _projectService;
+        private readonly IUserService _userService;
+        private readonly IProjectRoleService _projectRoleService;
         private Project _selectedProject;
         public ProjectWindow()
         {
             InitializeComponent();
-            _projectService = App.ServiceProvider.GetRequiredService<ProjectService>();
+            // Initialize services
+            _projectService = App.ServiceProvider.GetRequiredService<IProjectService>();
+            _userService = App.ServiceProvider.GetRequiredService<IUserService>();
+            _projectRoleService = App.ServiceProvider.GetRequiredService<IProjectRoleService>();
+
             LoadProjects();
         }
 
         private void LoadProjects()
         {
-            var projects = _projectService.GetAll();
-            dgProjects.ItemsSource = projects;
-        }
-
-        private void btnCreateProject_Click(object sender, RoutedEventArgs e)
-        {
-            var projectName = txtProjectName.Text.Trim();
-            var desc = txtDescription.Text.Trim();
-            var start = dpStartDate.SelectedDate;
-            var end = dpEndDate.SelectedDate;
-            if (string.IsNullOrEmpty(projectName) || start == null || end == null)
+            try
             {
-                MessageBox.Show("Please enter all required information!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
+                var projects = _projectService.GetAll().ToList();
+                dgProjects.ItemsSource = projects;
+                txtStatus.Text = $"Loaded {projects.Count} projects";
             }
-            var project = new Project
+            catch (Exception ex)
             {
-                ProjectName = projectName,
-                Description = desc,
-                StartDate = start.Value,
-                EndDate = end.Value
-            };
-            _projectService.Add(project);
-            LoadProjects();
-            ClearForm();
+                MessageBox.Show($"Error loading projects: {ex.Message}", "Error",
+                               MessageBoxButton.OK, MessageBoxImage.Error);
+                txtStatus.Text = "Error loading projects";
+            }
         }
 
-        private void dgProjects_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private void DgProjects_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             _selectedProject = dgProjects.SelectedItem as Project;
+
             if (_selectedProject != null)
             {
+                // Enable action buttons
+                btnEditProject.IsEnabled = true;
+                btnDeleteProject.IsEnabled = true;
+                btnManageRoles.IsEnabled = true;
+
+                // Display project details
                 txtProjectName.Text = _selectedProject.ProjectName;
                 txtDescription.Text = _selectedProject.Description;
-                dpStartDate.SelectedDate = _selectedProject.StartDate;
-                dpEndDate.SelectedDate = _selectedProject.EndDate;
-                btnUpdateProject.Visibility = Visibility.Visible;
-                btnCreateProject.IsEnabled = false;
+                txtStartDate.Text = _selectedProject.StartDate.ToString("dd/MM/yyyy");
+                txtEndDate.Text = _selectedProject.EndDate.ToString("dd/MM/yyyy");
+                txtProjectStatus.Text = _selectedProject.Status;
+                txtManager.Text = _selectedProject.Manager?.FullName ?? "N/A";
             }
             else
             {
-                btnUpdateProject.Visibility = Visibility.Collapsed;
-                btnCreateProject.IsEnabled = true;
+                // Disable action buttons
+                btnEditProject.IsEnabled = false;
+                btnDeleteProject.IsEnabled = false;
+                btnManageRoles.IsEnabled = false;
+
+                // Clear project details
+                txtProjectName.Text = "-";
+                txtDescription.Text = "-";
+                txtStartDate.Text = "-";
+                txtEndDate.Text = "-";
+                txtProjectStatus.Text = "-";
+                txtManager.Text = "-";
             }
         }
 
-        private void btnEditProject_Click(object sender, RoutedEventArgs e)
+        private void BtnAddProject_Click(object sender, RoutedEventArgs e)
         {
-            var project = (sender as FrameworkElement).DataContext as Project;
-            if (project != null)
+            var projectForm = new ProjectFormWindow();
+            if (projectForm.ShowDialog() == true)
             {
-                dgProjects.SelectedItem = project;
+                LoadProjects();
+                txtStatus.Text = "Project added successfully";
             }
         }
 
-        private void btnUpdateProject_Click(object sender, RoutedEventArgs e)
+        private void BtnEditProject_Click(object sender, RoutedEventArgs e)
         {
-            if (_selectedProject == null) return;
-            var projectName = txtProjectName.Text.Trim();
-            var desc = txtDescription.Text.Trim();
-            var start = dpStartDate.SelectedDate;
-            var end = dpEndDate.SelectedDate;
-            if (string.IsNullOrEmpty(projectName) || start == null || end == null)
+            if (_selectedProject == null)
             {
-                MessageBox.Show("Please enter all required information!", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Please select a project to edit.", "No Selection",
+                               MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
-            var updatedProject = new Project
+
+            var projectForm = new ProjectFormWindow(_selectedProject);
+            if (projectForm.ShowDialog() == true)
             {
-                ProjectId = _selectedProject.ProjectId,
-                ProjectName = projectName,
-                Description = desc,
-                StartDate = start.Value,
-                EndDate = end.Value,
-                Status = _selectedProject.Status,
-                DateCreated = _selectedProject.DateCreated,
-                ManagerId = _selectedProject.ManagerId
-            };
-            _projectService.Update(updatedProject);
-            LoadProjects();
-            ClearForm();
+                LoadProjects();
+                txtStatus.Text = "Project updated successfully";
+            }
         }
 
-        private void btnDeleteProject_Click(object sender, RoutedEventArgs e)
+        private void BtnDeleteProject_Click(object sender, RoutedEventArgs e)
         {
-            var project = (sender as FrameworkElement).DataContext as Project;
-            if (project != null)
+            if (_selectedProject == null)
             {
-                if (MessageBox.Show($"Are you sure you want to delete project '{project.ProjectName}'?", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                MessageBox.Show("Please select a project to delete.", "No Selection",
+                               MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var result = MessageBox.Show($"Are you sure you want to delete project '{_selectedProject.ProjectName}'?",
+                                        "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                try
                 {
-                    _projectService.Delete(project.ProjectId);
+                    _projectService.Delete(_selectedProject.ProjectId);
                     LoadProjects();
-                    ClearForm();
+                    txtStatus.Text = "Project deleted successfully";
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error deleting project: {ex.Message}", "Error",
+                                   MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
 
-        private void ClearForm()
+        private void BtnManageRoles_Click(object sender, RoutedEventArgs e)
         {
-            txtProjectName.Text = "";
-            txtDescription.Text = "";
-            dpStartDate.SelectedDate = null;
-            dpEndDate.SelectedDate = null;
-            btnUpdateProject.Visibility = Visibility.Collapsed;
-            btnCreateProject.IsEnabled = true;
-            dgProjects.SelectedItem = null;
-            _selectedProject = null;
+            if (_selectedProject == null)
+            {
+                MessageBox.Show("Please select a project to manage roles.", "No Selection",
+                               MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var roleManagementWindow = new ProjectRoleManagementWindow(_selectedProject);
+            roleManagementWindow.ShowDialog();
+        }
+
+        private void BtnRefresh_Click(object sender, RoutedEventArgs e)
+        {
+            LoadProjects();
+        }
+
+        private void BtnClose_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
-} 
+}

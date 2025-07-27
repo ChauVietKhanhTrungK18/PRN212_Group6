@@ -8,9 +8,11 @@ namespace TMS_DAL.Model
 {
     public class Role
     {
-        public int RoleId { get; set; }
+        public int RoleId { get; set; } // Admin, Manager, Member
         public string RoleName { get; set; }
         public string Description { get; set; }
-        public ICollection<ProjectRole> ProjectRoles { get; set; }
+
+        // Quan hệ
+        public ICollection<User> Users { get; set; }
     }
 }
