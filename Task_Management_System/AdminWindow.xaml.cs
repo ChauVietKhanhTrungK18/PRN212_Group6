@@ -48,5 +48,11 @@ namespace Task_Management_System
             manageWindow.ShowDialog();
             LoadDashboard();
         }
+        private void btnLogout_Click(object sender, RoutedEventArgs e)
+        {
+            var loginWindow = new LoginWindow();
+            loginWindow.Show();
+            this.Close();
+        }
     }
 } 

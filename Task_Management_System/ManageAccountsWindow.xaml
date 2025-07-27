@@ -1,86 +1,509 @@
 <Window x:Class="Task_Management_System.ManageAccountsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Manage Accounts" Height="650" Width="950"
+        Title="Manage Accounts" Height="830" Width="950"
         WindowStartupLocation="CenterScreen">
-    <Grid Background="#f4f6fa">
+
+    <Window.Resources>
+        <!-- Modern Button Style -->
+        <Style x:Key="ModernButton" TargetType="Button">
+            <Setter Property="Background" Value="#2563EB"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="20,12"/>
+            <Setter Property="Margin" Value="8"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="MinWidth" Value="140"/>
+            <Setter Property="Height" Value="46"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" 
+                                CornerRadius="10" BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#1D4ED8"/>
+                                <Setter Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="1.02" ScaleY="1.02"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#1E40AF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Back Button Style -->
+        <Style x:Key="BackButton" TargetType="Button">
+            <Setter Property="Background" Value="#64748B"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="16,10"/>
+            <Setter Property="Margin" Value="0,0,15,0"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="MinWidth" Value="110"/>
+            <Setter Property="Height" Value="42"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" 
+                                CornerRadius="10" BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#475569"/>
+                                <Setter Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="1.02" ScaleY="1.02"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Modern TextBox Style - Fixed for proper input -->
+        <Style x:Key="ModernTextBox" TargetType="TextBox">
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="OverridesDefaultStyle" Value="True"/>
+            <Setter Property="KeyboardNavigation.TabNavigation" Value="None"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="MinHeight" Value="30"/>
+            <Setter Property="AllowDrop" Value="true"/>
+            <Setter Property="Padding" Value="4,4"/>
+            <Setter Property="BorderBrush" Value="#D1D5DB"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#374151"/>
+            <Setter Property="CaretBrush" Value="#2563EB"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border x:Name="border"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="8"
+                        SnapsToDevicePixels="True"
+                        Padding="{TemplateBinding Padding}">
+                            <ScrollViewer x:Name="PART_ContentHost"
+                                  HorizontalScrollBarVisibility="Hidden"
+                                  VerticalScrollBarVisibility="Hidden"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#9CA3AF"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#2563EB"/>
+                                <Setter TargetName="border" Property="BorderThickness" Value="2"/>
+                                <Setter TargetName="border" Property="Background" Value="#FAFBFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Modern ComboBox Style with better text display -->
+        <Style x:Key="ModernCombo" TargetType="ComboBox">
+            <Setter Property="Padding" Value="12,10"/>
+            <Setter Property="BorderBrush" Value="#D1D5DB"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="MinWidth" Value="180"/>
+            <Setter Property="ItemTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding RoleName}" Padding="10,8" FontSize="13"/>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}" 
+                                CornerRadius="8">
+                            <Grid>
+                                <ToggleButton x:Name="toggleButton" Background="Transparent" 
+                                            BorderThickness="0" Focusable="False" 
+                                            IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" 
+                                            ClickMode="Press">
+                                    <ToggleButton.Template>
+                                        <ControlTemplate TargetType="ToggleButton">
+                                            <Border Background="Transparent">
+                                                <Path x:Name="Arrow" HorizontalAlignment="Right" VerticalAlignment="Center" 
+                                                      Margin="0,0,10,0" Fill="#6B7280" 
+                                                      Data="M7 10l5 5 5-5z" Width="10" Height="6"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </ToggleButton.Template>
+                                </ToggleButton>
+                                <ContentPresenter x:Name="contentPresenter" 
+                                    Grid.Column="0"
+                                    IsHitTestVisible="False" 
+                                    Content="{TemplateBinding SelectionBoxItem}" 
+                                    ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                    ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}"
+                                    Margin="12,0,0,0" 
+                                    VerticalAlignment="Center" 
+                                    HorizontalAlignment="Left"/>
+                                <Popup IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom" 
+                                       AllowsTransparency="True" Focusable="False" PopupAnimation="Slide">
+                                    <Border Background="White" BorderBrush="#D1D5DB" BorderThickness="1" 
+                                            CornerRadius="8" Margin="0,2,0,0" MinWidth="{TemplateBinding ActualWidth}">
+                                        <Border.Effect>
+                                            <DropShadowEffect Color="Black" Opacity="0.1" ShadowDepth="4" BlurRadius="12"/>
+                                        </Border.Effect>
+                                        <ScrollViewer MaxHeight="200">
+                                            <StackPanel IsItemsHost="True"/>
+                                        </ScrollViewer>
+                                    </Border>
+                                </Popup>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#2563EB"/>
+                                <Setter TargetName="border" Property="BorderThickness" Value="2"/>
+                                <Setter TargetName="border" Property="Background" Value="#FAFBFF"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#9CA3AF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- DataGrid Style -->
+        <Style x:Key="ModernDataGrid" TargetType="DataGrid">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E5E7EB"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="GridLinesVisibility" Value="Horizontal"/>
+            <Setter Property="HorizontalGridLinesBrush" Value="#F3F4F6"/>
+            <Setter Property="AlternatingRowBackground" Value="#F9FAFB"/>
+            <Setter Property="RowBackground" Value="White"/>
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
+
+        <!-- DataGrid Header Style -->
+        <Style x:Key="ModernDataGridHeader" TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#F8FAFC"/>
+            <Setter Property="Foreground" Value="#374151"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Padding" Value="16,12"/>
+            <Setter Property="BorderBrush" Value="#E5E7EB"/>
+            <Setter Property="BorderThickness" Value="0,0,1,1"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        </Style>
+
+        <!-- DataGrid Row Style -->
+        <Style x:Key="ModernDataGridRow" TargetType="DataGridRow">
+            <Setter Property="Height" Value="44"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#EFF6FF"/>
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#DBEAFE"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Card Style -->
+        <Style x:Key="Card" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="BorderBrush" Value="#E5E7EB"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="Black" Opacity="0.06" ShadowDepth="4" BlurRadius="16"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Popup Button Styles -->
+        <Style x:Key="PopupPrimaryButton" TargetType="Button">
+            <Setter Property="Background" Value="#2563EB"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="20,12"/>
+            <Setter Property="Margin" Value="8,0,0,0"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="MinWidth" Value="140"/>
+            <Setter Property="Height" Value="44"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" 
+                                CornerRadius="10" BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#1D4ED8"/>
+                                <Setter Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="1.05" ScaleY="1.05"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#1E40AF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="PopupSecondaryButton" TargetType="Button">
+            <Setter Property="Background" Value="#6B7280"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="20,12"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="MinWidth" Value="100"/>
+            <Setter Property="Height" Value="44"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" 
+                                CornerRadius="10" BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#4B5563"/>
+                                <Setter Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="1.05" ScaleY="1.05"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <!-- Background Gradient -->
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                <GradientStop Color="#F8FAFC" Offset="0"/>
+                <GradientStop Color="#F1F5F9" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+
         <!-- Main content -->
-        <StackPanel Margin="20">
-            <TextBlock Text="Manage Accounts" FontSize="28" FontWeight="Bold" Margin="0,0,0,20"/>
-
-            <!-- Filter and search -->
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,10" >
-                <!-- Search -->
-                <StackPanel Orientation="Vertical" Margin="0,0,10,0">
-                    <TextBlock Text="Search by Username/Email:" FontWeight="Bold"/>
-                    <TextBox x:Name="txtSearch" Width="200" Height="30"
-                             TextChanged="txtSearch_TextChanged"/>
-                </StackPanel>
-
-                <!-- Role filter -->
-                <StackPanel Orientation="Vertical" Margin="0,0,10,0">
-                    <TextBlock Text="Filter by Role:" FontWeight="Bold"/>
-                    <ComboBox x:Name="cbRoleFilter" Width="150"
-                              SelectionChanged="cbRoleFilter_SelectionChanged"
-                              DisplayMemberPath="RoleName" SelectedValuePath="RoleId"/>
-                </StackPanel>
-
-                <!-- Status filter -->
-                <StackPanel Orientation="Vertical" Margin="0,0,10,0">
-                    <TextBlock Text="Filter by Status:" FontWeight="Bold"/>
-                    <ComboBox x:Name="cbStatusFilter" Width="150"
-                              SelectionChanged="cbStatusFilter_SelectionChanged">
-                        <ComboBoxItem Content="All" IsSelected="True"/>
-                        <ComboBoxItem Content="Active"/>
-                        <ComboBoxItem Content="Inactive"/>
-                    </ComboBox>
-                </StackPanel>
-
-                <Button Content="Clear Filters" Width="120" VerticalAlignment="Bottom"
-                        Click="btnClearFilter_Click"/>
+        <StackPanel Margin="24,24,24,14">
+            <!-- Header Section -->
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,24">
+                <Button Content="← Back" Style="{StaticResource BackButton}" 
+                        Click="BackButton_Click"/>
+                <TextBlock Text="Manage Accounts" FontSize="32" FontWeight="Bold" 
+                           Foreground="#1F2937" VerticalAlignment="Center" Margin="15,0,0,0"/>
             </StackPanel>
 
-            <!-- User DataGrid -->
-            <DataGrid x:Name="dgUsers" AutoGenerateColumns="False"
-                      Height="420" IsReadOnly="True"
-                      SelectionMode="Single" CanUserAddRows="False">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="ID" Binding="{Binding UserId}" Width="60"/>
-                    <DataGridTextColumn Header="Username" Binding="{Binding Username}" Width="150"/>
-                    <DataGridTextColumn Header="Full Name" Binding="{Binding FullName}" Width="200"/>
-                    <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="200"/>
-                    <!-- Role chỉ hiển thị, không chỉnh trực tiếp -->
-                    <DataGridTextColumn Header="Role" Binding="{Binding Role.RoleName}" Width="150"/>
-                    <DataGridCheckBoxColumn Header="Inactive?" Binding="{Binding IsDeleted}" Width="100"/>
-                </DataGrid.Columns>
-            </DataGrid>
+            <!-- Filters Card -->
+            <Border Style="{StaticResource Card}" Padding="24" Margin="0,0,0,20">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                        <TextBlock Text="🔍 Search &amp; Filter"
+                           FontSize="16" 
+                           FontWeight="SemiBold" 
+                           Foreground="#2C3E50" 
+                           Margin="0,0,0,15"/>
+                    </StackPanel>
 
-            <!-- Action Buttons -->
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0" >
-                <Button Content="Activate" Width="100" Click="BtnActivate_Click"/>
-                <Button Content="Deactivate" Width="100" Click="BtnDeactivate_Click"/>
-                <Button Content="Change Role" Width="120" Click="BtnChangeRole_Click"/>
+                    <!-- Fixed filter controls with proper alignment -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Search -->
+                        <StackPanel Grid.Column="0" Orientation="Vertical" Margin="0,0,20,0">
+                            <TextBlock Text="Search by Username/Email" FontWeight="SemiBold" 
+                                       Foreground="#4B5563" FontSize="13" Margin="0,0,0,8"/>
+                            <TextBox x:Name="txtSearch" Width="220" Height="40"
+                                     Style="{StaticResource ModernTextBox}"
+                                     TextChanged="txtSearch_TextChanged"
+                                     TabIndex="1"/>
+                        </StackPanel>
+
+                        <!-- Role filter -->
+                        <StackPanel Grid.Column="1" Orientation="Vertical" Margin="0,0,20,0">
+                            <TextBlock Text="Filter by Role" FontWeight="SemiBold" 
+                                       Foreground="#4B5563" FontSize="13" Margin="0,0,0,8"/>
+                            <ComboBox x:Name="cbRoleFilter" Width="200" Height="40"
+                                      Style="{StaticResource ModernCombo}"
+                                      SelectionChanged="cbRoleFilter_SelectionChanged"
+                                      DisplayMemberPath="RoleName" SelectedValuePath="RoleId"
+                                      TabIndex="2"/>
+                        </StackPanel>
+
+                        <!-- Status filter -->
+                        <StackPanel Grid.Column="2" Orientation="Vertical" Margin="0,0,20,0">
+                            <TextBlock Text="Filter by Status" FontWeight="SemiBold" 
+                                       Foreground="#4B5563" FontSize="13" Margin="0,0,0,8"/>
+                            <ComboBox x:Name="cbStatusFilter" Width="180" Height="40"
+                                      Style="{StaticResource ModernCombo}"
+                                      SelectionChanged="cbStatusFilter_SelectionChanged"
+                                      TabIndex="3">
+                                <ComboBoxItem Content="All" IsSelected="True"/>
+                                <ComboBoxItem Content="Active"/>
+                                <ComboBoxItem Content="Inactive"/>
+                            </ComboBox>
+                        </StackPanel>
+
+                        <!-- Clear All button - properly aligned -->
+                        <StackPanel Grid.Column="3" Orientation="Vertical">
+                            <TextBlock Text="" FontWeight="SemiBold" 
+                                       Foreground="Transparent" FontSize="13" Margin="0,0,0,0"/>
+                            <Button Content="Clear All" Width="120" Height="40" 
+                                    Style="{StaticResource ModernButton}"
+                                    Click="btnClearFilter_Click"
+                                    TabIndex="4"/>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- DataGrid Card -->
+            <Border Style="{StaticResource Card}" Padding="0" Margin="0,0,0,20">
+                <Grid>
+                    <!-- Header -->
+                    <Border Background="#F8FAFC" CornerRadius="12,12,0,0" Height="60" VerticalAlignment="Top">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="24,0">
+                            <TextBlock Text="👥" FontSize="18" Margin="0,0,8,0"/>
+                            <TextBlock Text="User Accounts" FontSize="18" FontWeight="Bold" 
+                                       Foreground="#374151"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- DataGrid -->
+                    <DataGrid x:Name="dgUsers" AutoGenerateColumns="False"
+                              Height="350" IsReadOnly="True" Margin="0,60,0,0"
+                              SelectionMode="Single" CanUserAddRows="False"
+                              Style="{StaticResource ModernDataGrid}"
+                              ColumnHeaderStyle="{StaticResource ModernDataGridHeader}"
+                              RowStyle="{StaticResource ModernDataGridRow}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding UserId}" Width="70"/>
+                            <DataGridTextColumn Header="Username" Binding="{Binding Username}" Width="150"/>
+                            <DataGridTextColumn Header="Full Name" Binding="{Binding FullName}" Width="200"/>
+                            <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="220"/>
+                            <!-- Role chỉ hiển thị, không chỉnh trực tiếp -->
+                            <DataGridTextColumn Header="Role" Binding="{Binding Role.RoleName}" Width="140"/>
+                            <DataGridCheckBoxColumn Header="Inactive?" Binding="{Binding IsDeleted}" Width="100"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Border>
+
+            <!-- Enhanced Action Buttons -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,8,0,0">
+                <Button Style="{StaticResource ModernButton}" Click="BtnActivate_Click" 
+                        Width="160" Height="50">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="✓" FontSize="16" Margin="0,0,8,0"/>
+                        <TextBlock Text="Activate" FontSize="14"/>
+                    </StackPanel>
+                </Button>
+                <Button Style="{StaticResource ModernButton}" Click="BtnDeactivate_Click" 
+                        Width="160" Height="50" Margin="10,0">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="✗" FontSize="16" Margin="0,0,8,0"/>
+                        <TextBlock Text="Deactivate" FontSize="14"/>
+                    </StackPanel>
+                </Button>
+                <Button Style="{StaticResource ModernButton}" Click="BtnChangeRole_Click" 
+                        Width="160" Height="50" Margin="10,0">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="⚙" FontSize="16" Margin="0,0,8,0"/>
+                        <TextBlock Text="Change Role" FontSize="14"/>
+                    </StackPanel>
+                </Button>
             </StackPanel>
         </StackPanel>
 
-        <!-- Popup for Change Role -->
+        <!-- Enhanced Popup for Change Role -->
         <Border x:Name="PopupChangeRole"
                 Background="White"
-                CornerRadius="8"
-                BorderBrush="Gray" BorderThickness="1"
-                Padding="20"
-                Width="300" Height="180"
+                CornerRadius="16"
+                BorderBrush="#E5E7EB" BorderThickness="1"
+                Padding="36"
+                Width="450" Height="280"
                 Visibility="Collapsed"
                 HorizontalAlignment="Center" VerticalAlignment="Center"
                 Panel.ZIndex="999">
+            <Border.Effect>
+                <DropShadowEffect Color="Black" Opacity="0.25" ShadowDepth="16" BlurRadius="32"/>
+            </Border.Effect>
+
             <StackPanel>
-                <TextBlock Text="Select new role:" FontWeight="Bold" Margin="0,0,0,10"/>
-                <ComboBox x:Name="cbPopupRoles" DisplayMemberPath="RoleName" SelectedValuePath="RoleId" Margin="0,0,0,10"/>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" >
-                    <Button Content="Cancel" Width="80" Click="BtnCancelPopup_Click"/>
-                    <Button Content="Save" Width="80" Click="BtnSavePopup_Click"/>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,24">
+                    <TextBlock Text="⚙️" FontSize="24" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                    <TextBlock Text="Change User Role" FontSize="22" FontWeight="Bold" 
+                               Foreground="#374151" VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <TextBlock Text="Select the new role for this user:" FontWeight="SemiBold" 
+                           Foreground="#6B7280" FontSize="15" Margin="0,0,0,16"/>
+
+                <ComboBox x:Name="cbPopupRoles" Height="48" 
+                          Style="{StaticResource ModernCombo}"
+                          DisplayMemberPath="RoleName" SelectedValuePath="RoleId" 
+                          Margin="0,0,0,32" FontSize="14"/>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="Cancel" Style="{StaticResource PopupSecondaryButton}" 
+                            Click="BtnCancelPopup_Click"/>
+                    <Button Content="Save Changes" Style="{StaticResource PopupPrimaryButton}" 
+                            Click="BtnSavePopup_Click"/>
                 </StackPanel>
             </StackPanel>
         </Border>
+
+        <!-- Enhanced Overlay for popup -->
+        <Border x:Name="PopupOverlay" Background="#90000000" 
+                Visibility="Collapsed" Panel.ZIndex="998"/>
     </Grid>
 </Window>

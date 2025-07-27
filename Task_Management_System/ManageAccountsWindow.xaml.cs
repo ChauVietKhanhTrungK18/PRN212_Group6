@@ -164,6 +164,12 @@ namespace Task_Management_System
                 MessageBox.Show("Role changed successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
+        private void BackButton_Click(object sender, RoutedEventArgs e)
+        {
+            var adminWindow = new AdminWindow();
+            adminWindow.Show();
+            this.Close();
+        }
 
 
     }

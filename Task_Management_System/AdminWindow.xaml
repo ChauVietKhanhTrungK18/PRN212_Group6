@@ -8,7 +8,51 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <TextBlock Text="Admin Dashboard" FontSize="32" FontWeight="Bold" Foreground="#2d3a4a" Margin="30,25,0,10"/>
+
+        <!-- Header with Title and Logout Button -->
+        <Grid Grid.Row="0" Margin="30,25,30,10">
+            <TextBlock Text="Admin Dashboard" 
+                       FontSize="32" 
+                       FontWeight="Bold" 
+                       Foreground="#2d3a4a" 
+                       VerticalAlignment="Center"/>
+
+            <Button Content="Logout" 
+                    Width="100" 
+                    Height="35"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    FontSize="14"
+                    FontWeight="Bold"
+                    Background="#e74c3c"
+                    Foreground="White"
+                    BorderThickness="0"
+                    Cursor="Hand"
+                    Click="btnLogout_Click">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}" 
+                                            CornerRadius="6">
+                                        <ContentPresenter HorizontalAlignment="Center" 
+                                                        VerticalAlignment="Center"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#c0392b"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Button.Style>
+            </Button>
+        </Grid>
+
+        <!-- Original Content -->
         <StackPanel Grid.Row="1" Orientation="Vertical" Margin="30,0,30,20">
             <UniformGrid Columns="4" Rows="1" Margin="0,0,0,30" HorizontalAlignment="Stretch" VerticalAlignment="Top">
                 <Border Background="#fff" CornerRadius="16" Margin="10" Padding="24" BorderBrush="#0078d7" BorderThickness="2">
@@ -46,13 +90,20 @@
                 </StackPanel>
             </Border>
             <Border Background="#fff" CornerRadius="12" Padding="24" Margin="0,10,0,0">
-                <StackPanel>
+                <StackPanel RenderTransformOrigin="0.5,0.5">
+                    <StackPanel.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform/>
+                            <SkewTransform/>
+                            <RotateTransform Angle="-0.297"/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </StackPanel.RenderTransform>
                     <TextBlock Text="Software Information" FontWeight="Bold" FontSize="20" Height="74"/>
                     <TextBlock Text="Task Management System v1.0" FontSize="14"/>
-                    <TextBlock Text="Developed by Group 6 - PRN212" FontSize="14"/>
                     <TextBlock Text="Contact: group6@example.com" FontSize="14"/>
                 </StackPanel>
             </Border>
         </StackPanel>
     </Grid>
-</Window> 
+</Window>
