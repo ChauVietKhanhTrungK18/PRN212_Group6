@@ -3,10 +3,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace TMS_DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class DbInit : Migration
+    public partial class DBInit : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -46,7 +48,7 @@ namespace TMS_DAL.Migrations
                         column: x => x.RoleId,
                         principalTable: "Roles",
                         principalColumn: "RoleId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -93,36 +95,29 @@ namespace TMS_DAL.Migrations
                         column: x => x.ManagerId,
                         principalTable: "Users",
                         principalColumn: "UserId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProjectRoles",
+                name: "ProjectMembers",
                 columns: table => new
                 {
-                    ProjectRoleId = table.Column<int>(type: "int", nullable: false)
+                    ProjectMemberId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
                     ProjectId = table.Column<int>(type: "int", nullable: false),
-                    RoleId = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProjectRoles", x => x.ProjectRoleId);
+                    table.PrimaryKey("PK_ProjectMembers", x => x.ProjectMemberId);
                     table.ForeignKey(
-                        name: "FK_ProjectRoles_Projects_ProjectId",
+                        name: "FK_ProjectMembers_Projects_ProjectId",
                         column: x => x.ProjectId,
                         principalTable: "Projects",
                         principalColumn: "ProjectId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ProjectRoles_Roles_RoleId",
-                        column: x => x.RoleId,
-                        principalTable: "Roles",
-                        principalColumn: "RoleId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ProjectRoles_Users_UserId",
+                        name: "FK_ProjectMembers_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "UserId",
@@ -139,7 +134,7 @@ namespace TMS_DAL.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Deadline = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AssignedTo = table.Column<int>(type: "int", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ProjectId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -151,12 +146,6 @@ namespace TMS_DAL.Migrations
                         principalTable: "Projects",
                         principalColumn: "ProjectId",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ProjectTasks_Users_AssignedTo",
-                        column: x => x.AssignedTo,
-                        principalTable: "Users",
-                        principalColumn: "UserId",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -184,14 +173,57 @@ namespace TMS_DAL.Migrations
                         name: "FK_Attachments_Projects_ProjectId",
                         column: x => x.ProjectId,
                         principalTable: "Projects",
-                        principalColumn: "ProjectId");
+                        principalColumn: "ProjectId",
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK_Attachments_Users_UploadedByUserId",
                         column: x => x.UploadedByUserId,
                         principalTable: "Users",
                         principalColumn: "UserId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
+
+            migrationBuilder.CreateTable(
+                name: "TaskAssignments",
+                columns: table => new
+                {
+                    TaskAssignmentId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TaskId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    AssignedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TaskAssignments", x => x.TaskAssignmentId);
+                    table.ForeignKey(
+                        name: "FK_TaskAssignments_ProjectTasks_TaskId",
+                        column: x => x.TaskId,
+                        principalTable: "ProjectTasks",
+                        principalColumn: "TaskId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TaskAssignments_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.InsertData(
+                table: "Roles",
+                columns: new[] { "RoleId", "Description", "RoleName" },
+                values: new object[,]
+                {
+                    { 1, "System administrator", "Admin" },
+                    { 2, "Project manager", "Manager" },
+                    { 3, "Project member", "Member" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "UserId", "DateCreated", "Email", "FullName", "PasswordHash", "RoleId", "Username" },
+                values: new object[] { 1, new DateTime(2025, 7, 27, 20, 16, 15, 385, DateTimeKind.Local).AddTicks(7018), "admin@example.com", "Admin User", "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9", 1, "admin" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Attachments_ProjectId",
@@ -214,18 +246,13 @@ namespace TMS_DAL.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProjectRoles_ProjectId",
-                table: "ProjectRoles",
+                name: "IX_ProjectMembers_ProjectId",
+                table: "ProjectMembers",
                 column: "ProjectId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProjectRoles_RoleId",
-                table: "ProjectRoles",
-                column: "RoleId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProjectRoles_UserId",
-                table: "ProjectRoles",
+                name: "IX_ProjectMembers_UserId",
+                table: "ProjectMembers",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
@@ -234,14 +261,19 @@ namespace TMS_DAL.Migrations
                 column: "ManagerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProjectTasks_AssignedTo",
-                table: "ProjectTasks",
-                column: "AssignedTo");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ProjectTasks_ProjectId",
                 table: "ProjectTasks",
                 column: "ProjectId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TaskAssignments_TaskId",
+                table: "TaskAssignments",
+                column: "TaskId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TaskAssignments_UserId",
+                table: "TaskAssignments",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_RoleId",
@@ -259,7 +291,10 @@ namespace TMS_DAL.Migrations
                 name: "Notifications");
 
             migrationBuilder.DropTable(
-                name: "ProjectRoles");
+                name: "ProjectMembers");
+
+            migrationBuilder.DropTable(
+                name: "TaskAssignments");
 
             migrationBuilder.DropTable(
                 name: "ProjectTasks");

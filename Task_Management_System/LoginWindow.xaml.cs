@@ -27,24 +27,24 @@ namespace Task_Management_System
             }
 
             var user = _userService.Login(username, password);
-            if (user != null)
-            {
-                if (user.IsAdmin)
-                {
-                    var adminWindow = new AdminWindow();
-                    adminWindow.Show();
-                }
-                else
-                {
-                    var projectWindow = new ProjectWindow();
-                    projectWindow.Show();
-                }
-                this.Close();
-            }
-            else
-            {
-                MessageBox.Show("Invalid username or password!", "Login Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            //if (user != null)
+            //{
+            //    if (user.IsAdmin)
+            //    {
+            //        var adminWindow = new AdminWindow();
+            //        adminWindow.Show();
+            //    }
+            //    else
+            //    {
+            //        var projectWindow = new ProjectWindow();
+            //        projectWindow.Show();
+            //    }
+            //    this.Close();
+            //}
+            //else
+            //{
+            //    MessageBox.Show("Invalid username or password!", "Login Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+            //}
         }
 
         private void BtnRegister_Click(object sender, RoutedEventArgs e)

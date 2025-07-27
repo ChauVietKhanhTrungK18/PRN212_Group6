@@ -16,7 +16,6 @@ namespace TMS_DAL.Repository
 
         public ProjectTask GetById(int taskId) => _context.ProjectTasks.Find(taskId);
         public IEnumerable<ProjectTask> GetByProjectId(int projectId) => _context.ProjectTasks.Where(t => t.ProjectId == projectId).ToList();
-        public IEnumerable<ProjectTask> GetByAssignedUserId(int userId) => _context.ProjectTasks.Where(t => t.AssignedTo == userId).ToList();
         public IEnumerable<ProjectTask> GetAll() => _context.ProjectTasks.ToList();
         public void Add(ProjectTask task) { _context.ProjectTasks.Add(task); _context.SaveChanges(); }
         public void Update(ProjectTask task) { _context.ProjectTasks.Update(task); _context.SaveChanges(); }
@@ -28,6 +27,11 @@ namespace TMS_DAL.Repository
                 _context.ProjectTasks.Remove(task);
                 _context.SaveChanges();
             }
+        }
+
+        public IEnumerable<ProjectTask> GetByAssignedUserId(int userId)
+        {
+            throw new NotImplementedException();
         }
     }
 } 

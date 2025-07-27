@@ -13,9 +13,12 @@ namespace TMS_DAL.Model
         public string Description { get; set; }
         public DateTime Deadline { get; set; }
         public string Status { get; set; }
-        public int AssignedTo { get; set; }
-        public User AssignedUser { get; set; }
+        public DateTime DateCreated { get; set; }
+
         public int ProjectId { get; set; }
         public Project Project { get; set; }
+
+        public ICollection<TaskAssignment> TaskAssignments { get; set; }
+        public ICollection<Attachment> Attachments { get; set; }
     }
 }

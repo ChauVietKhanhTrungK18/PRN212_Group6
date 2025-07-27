@@ -128,32 +128,27 @@ namespace TMS_DAL.Migrations
                     b.ToTable("Projects");
                 });
 
-            modelBuilder.Entity("TMS_DAL.Model.ProjectRole", b =>
+            modelBuilder.Entity("TMS_DAL.Model.ProjectMember", b =>
                 {
-                    b.Property<int>("ProjectRoleId")
+                    b.Property<int>("ProjectMemberId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProjectRoleId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProjectMemberId"));
 
                     b.Property<int>("ProjectId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RoleId")
                         .HasColumnType("int");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.HasKey("ProjectRoleId");
+                    b.HasKey("ProjectMemberId");
 
                     b.HasIndex("ProjectId");
 
-                    b.HasIndex("RoleId");
-
                     b.HasIndex("UserId");
 
-                    b.ToTable("ProjectRoles");
+                    b.ToTable("ProjectMembers");
                 });
 
             modelBuilder.Entity("TMS_DAL.Model.ProjectTask", b =>
@@ -164,8 +159,8 @@ namespace TMS_DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TaskId"));
 
-                    b.Property<int>("AssignedTo")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("Deadline")
                         .HasColumnType("datetime2");
@@ -186,8 +181,6 @@ namespace TMS_DAL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("TaskId");
-
-                    b.HasIndex("AssignedTo");
 
                     b.HasIndex("ProjectId");
 
@@ -218,21 +211,47 @@ namespace TMS_DAL.Migrations
                         new
                         {
                             RoleId = 1,
-                            Description = "Manages the project and team members",
-                            RoleName = "Project Manager"
+                            Description = "System administrator",
+                            RoleName = "Admin"
                         },
                         new
                         {
                             RoleId = 2,
-                            Description = "Project team member",
-                            RoleName = "Member"
+                            Description = "Project manager",
+                            RoleName = "Manager"
                         },
                         new
                         {
                             RoleId = 3,
-                            Description = "Can view project information only",
-                            RoleName = "Viewer"
+                            Description = "Project member",
+                            RoleName = "Member"
                         });
+                });
+
+            modelBuilder.Entity("TMS_DAL.Model.TaskAssignment", b =>
+                {
+                    b.Property<int>("TaskAssignmentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TaskAssignmentId"));
+
+                    b.Property<DateTime>("AssignedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("TaskId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("TaskAssignmentId");
+
+                    b.HasIndex("TaskId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("TaskAssignments");
                 });
 
             modelBuilder.Entity("TMS_DAL.Model.User", b =>
@@ -254,12 +273,12 @@ namespace TMS_DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsAdmin")
-                        .HasColumnType("bit");
-
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Username")
                         .IsRequired()
@@ -267,45 +286,38 @@ namespace TMS_DAL.Migrations
 
                     b.HasKey("UserId");
 
+                    b.HasIndex("RoleId");
+
                     b.ToTable("Users");
 
                     b.HasData(
                         new
                         {
                             UserId = 1,
-                            DateCreated = new DateTime(2025, 7, 23, 15, 24, 0, 506, DateTimeKind.Local).AddTicks(5921),
+                            DateCreated = new DateTime(2025, 7, 27, 20, 16, 15, 385, DateTimeKind.Local).AddTicks(7018),
                             Email = "admin@example.com",
                             FullName = "Admin User",
-                            IsAdmin = true,
-                            PasswordHash = "0192023a7bbd73250516f069df18b500c33910a2d4d4074ec5b0d1b0e5b0c1c6",
+                            PasswordHash = "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9",
+                            RoleId = 1,
                             Username = "admin"
-                        },
-                        new
-                        {
-                            UserId = 2,
-                            DateCreated = new DateTime(2025, 7, 23, 15, 24, 0, 506, DateTimeKind.Local).AddTicks(5938),
-                            Email = "user@example.com",
-                            FullName = "Normal User",
-                            IsAdmin = false,
-                            PasswordHash = "6ad14ba9986e3615423dfca256d04e3f735357c3558b8b4319c49a23ea8bc99c",
-                            Username = "user"
                         });
                 });
 
             modelBuilder.Entity("TMS_DAL.Model.Attachment", b =>
                 {
                     b.HasOne("TMS_DAL.Model.Project", "Project")
-                        .WithMany()
-                        .HasForeignKey("ProjectId");
+                        .WithMany("Attachments")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("TMS_DAL.Model.ProjectTask", "Task")
-                        .WithMany()
+                        .WithMany("Attachments")
                         .HasForeignKey("TaskId");
 
                     b.HasOne("TMS_DAL.Model.User", "UploadedByUser")
-                        .WithMany()
+                        .WithMany("Attachments")
                         .HasForeignKey("UploadedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Project");
@@ -318,7 +330,7 @@ namespace TMS_DAL.Migrations
             modelBuilder.Entity("TMS_DAL.Model.Notification", b =>
                 {
                     b.HasOne("TMS_DAL.Model.User", "User")
-                        .WithMany()
+                        .WithMany("Notifications")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -331,75 +343,102 @@ namespace TMS_DAL.Migrations
                     b.HasOne("TMS_DAL.Model.User", "Manager")
                         .WithMany()
                         .HasForeignKey("ManagerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Manager");
                 });
 
-            modelBuilder.Entity("TMS_DAL.Model.ProjectRole", b =>
+            modelBuilder.Entity("TMS_DAL.Model.ProjectMember", b =>
                 {
                     b.HasOne("TMS_DAL.Model.Project", "Project")
-                        .WithMany("ProjectRoles")
+                        .WithMany("ProjectMembers")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TMS_DAL.Model.Role", "Role")
-                        .WithMany("ProjectRoles")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("TMS_DAL.Model.User", "User")
-                        .WithMany("ProjectRoles")
+                        .WithMany("ProjectMembers")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Project");
 
-                    b.Navigation("Role");
-
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("TMS_DAL.Model.ProjectTask", b =>
                 {
-                    b.HasOne("TMS_DAL.Model.User", "AssignedUser")
-                        .WithMany("ProjectTasks")
-                        .HasForeignKey("AssignedTo")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("TMS_DAL.Model.Project", "Project")
                         .WithMany("ProjectTasks")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("AssignedUser");
-
                     b.Navigation("Project");
                 });
 
-            modelBuilder.Entity("TMS_DAL.Model.Project", b =>
+            modelBuilder.Entity("TMS_DAL.Model.TaskAssignment", b =>
                 {
-                    b.Navigation("ProjectRoles");
+                    b.HasOne("TMS_DAL.Model.ProjectTask", "Task")
+                        .WithMany("TaskAssignments")
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("ProjectTasks");
-                });
+                    b.HasOne("TMS_DAL.Model.User", "User")
+                        .WithMany("TaskAssignments")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-            modelBuilder.Entity("TMS_DAL.Model.Role", b =>
-                {
-                    b.Navigation("ProjectRoles");
+                    b.Navigation("Task");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("TMS_DAL.Model.User", b =>
                 {
-                    b.Navigation("ProjectRoles");
+                    b.HasOne("TMS_DAL.Model.Role", "Role")
+                        .WithMany("Users")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("TMS_DAL.Model.Project", b =>
+                {
+                    b.Navigation("Attachments");
+
+                    b.Navigation("ProjectMembers");
 
                     b.Navigation("ProjectTasks");
+                });
+
+            modelBuilder.Entity("TMS_DAL.Model.ProjectTask", b =>
+                {
+                    b.Navigation("Attachments");
+
+                    b.Navigation("TaskAssignments");
+                });
+
+            modelBuilder.Entity("TMS_DAL.Model.Role", b =>
+                {
+                    b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("TMS_DAL.Model.User", b =>
+                {
+                    b.Navigation("Attachments");
+
+                    b.Navigation("Notifications");
+
+                    b.Navigation("ProjectMembers");
+
+                    b.Navigation("TaskAssignments");
                 });
 #pragma warning restore 612, 618
         }

@@ -12,7 +12,6 @@ namespace TMS_DAL.Model
         public string RoleName { get; set; }
         public string Description { get; set; }
 
-        // Quan hệ
         public ICollection<User> Users { get; set; }
     }
 }

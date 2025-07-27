@@ -16,10 +16,12 @@ namespace TMS_DAL.Model
         public string Status { get; set; }
         public DateTime DateCreated { get; set; }
 
+        // Người tạo dự án (Manager)
         public int ManagerId { get; set; }
         public User Manager { get; set; }
 
-        public ICollection<ProjectRole> ProjectRoles { get; set; }
+        public ICollection<ProjectMember> ProjectMembers { get; set; }
         public ICollection<ProjectTask> ProjectTasks { get; set; }
+        public ICollection<Attachment> Attachments { get; set; }
     }
 }

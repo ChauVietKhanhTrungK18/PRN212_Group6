@@ -13,7 +13,6 @@ namespace Task_Management_System
     {
         private readonly IProjectService _projectService;
         private readonly IUserService _userService;
-        private readonly IProjectRoleService _projectRoleService;
         private Project _selectedProject;
         public ProjectWindow()
         {
@@ -21,7 +20,6 @@ namespace Task_Management_System
             // Initialize services
             _projectService = App.ServiceProvider.GetRequiredService<IProjectService>();
             _userService = App.ServiceProvider.GetRequiredService<IUserService>();
-            _projectRoleService = App.ServiceProvider.GetRequiredService<IProjectRoleService>();
 
             LoadProjects();
         }

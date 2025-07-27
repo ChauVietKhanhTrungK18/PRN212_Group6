@@ -14,8 +14,15 @@ namespace TMS_DAL.Model
         public string Email { get; set; }
         public string PasswordHash { get; set; }
         public DateTime DateCreated { get; set; }
-        public bool IsAdmin { get; set; }
-        public ICollection<ProjectRole> ProjectRoles { get; set; }
-        public ICollection<ProjectTask> ProjectTasks { get; set; }
+
+        // Role hệ thống
+        public int RoleId { get; set; }
+        public Role Role { get; set; }
+
+        // Các dự án mà người này tham gia
+        public ICollection<ProjectMember> ProjectMembers { get; set; }
+        public ICollection<TaskAssignment> TaskAssignments { get; set; }
+        public ICollection<Attachment> Attachments { get; set; }
+        public ICollection<Notification> Notifications { get; set; }
     }
 }

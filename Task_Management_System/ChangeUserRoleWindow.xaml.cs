@@ -12,17 +12,13 @@ namespace Task_Management_System
 {
     public partial class ChangeUserRoleWindow : Window
     {
-        private readonly IProjectRoleService _projectRoleService;
         private readonly IRoleService _roleService;
-        private ProjectRole _projectRole;
 
-        public ChangeUserRoleWindow(ProjectRole projectRole)
+        public ChangeUserRoleWindow()
         {
             InitializeComponent();
-            _projectRole = projectRole;
 
             // Initialize services
-            _projectRoleService = App.ServiceProvider.GetRequiredService<IProjectRoleService>();
             _roleService = App.ServiceProvider.GetRequiredService<IRoleService>();
 
             LoadData();
@@ -30,34 +26,6 @@ namespace Task_Management_System
 
         private void LoadData()
         {
-            try
-            {
-                // Display user and current role info
-                txtUserName.Text = _projectRole.User?.FullName ?? "N/A";
-                txtCurrentRole.Text = _projectRole.Role?.RoleName ?? "N/A";
-
-                // Load all available roles
-                var roles = _roleService.GetAll().ToList();
-                cboNewRole.ItemsSource = roles;
-
-                // Set current role as selected
-                if (_projectRole.Role != null)
-                {
-                    var currentRole = roles.FirstOrDefault(r => r.RoleId == _projectRole.RoleId);
-                    if (currentRole != null)
-                    {
-                        cboNewRole.SelectedItem = currentRole;
-                    }
-                }
-
-                // Add event handler for role selection change
-                cboNewRole.SelectionChanged += CboNewRole_SelectionChanged;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error loading data: {ex.Message}", "Error",
-                               MessageBoxButton.OK, MessageBoxImage.Error);
-            }
         }
 
         private void CboNewRole_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -75,44 +43,11 @@ namespace Task_Management_System
 
         private void BtnSave_Click(object sender, RoutedEventArgs e)
         {
-            if (!ValidateForm())
-                return;
-
-            try
-            {
-                var selectedRole = cboNewRole.SelectedItem as Role;
-
-                // Update the project role
-                _projectRole.RoleId = selectedRole.RoleId;
-                _projectRoleService.Update(_projectRole);
-
-                this.DialogResult = true;
-                this.Close();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error updating user role: {ex.Message}", "Error",
-                               MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+          
         }
 
         private bool ValidateForm()
         {
-            txtValidation.Text = "";
-
-            if (cboNewRole.SelectedItem == null)
-            {
-                txtValidation.Text = "Please select a new role.";
-                return false;
-            }
-
-            var selectedRole = cboNewRole.SelectedItem as Role;
-            if (selectedRole.RoleId == _projectRole.RoleId)
-            {
-                txtValidation.Text = "Please select a different role.";
-                return false;
-            }
-
             return true;
         }
 

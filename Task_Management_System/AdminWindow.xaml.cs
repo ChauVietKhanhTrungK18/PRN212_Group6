@@ -24,7 +24,7 @@ namespace Task_Management_System
 
         private void LoadDashboard()
         {
-            txtTotalMembers.Text = _userService.GetAll().Count(u => !u.IsAdmin).ToString();
+            //txtTotalMembers.Text = _userService.GetAll().Count(u => !u.IsAdmin).ToString();
             txtTotalProjects.Text = _projectService.GetAll().Count().ToString();
             txtTotalTasks.Text = _taskService.GetAll().Count().ToString();
             //txtTotalNotifications.Text = _notificationService.GetAll().Count().ToString();

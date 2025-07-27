@@ -6,15 +6,13 @@ using System.Threading.Tasks;
 
 namespace TMS_DAL.Model
 {
-    public class ProjectRole
+    public class ProjectMember
     {
-        public int ProjectRoleId { get; set; }
-        public int UserId { get; set; }
+        public int ProjectMemberId { get; set; }
         public int ProjectId { get; set; }
-        public int RoleId { get; set; }
+        public int UserId { get; set; }
 
-        public User User { get; set; }
         public Project Project { get; set; }
-        public Role Role { get; set; }
+        public User User { get; set; }
     }
 }

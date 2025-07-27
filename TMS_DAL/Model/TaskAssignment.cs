@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace TMS_DAL.Model
 {
-    public class Notification
+    public class TaskAssignment
     {
-        public int NotificationId { get; set; }
+        public int TaskAssignmentId { get; set; }
+        public int TaskId { get; set; }
         public int UserId { get; set; }
-        public string Message { get; set; }
-        public bool IsRead { get; set; }
-        public DateTime DateCreated { get; set; }
+        public DateTime AssignedAt { get; set; }
 
+        public ProjectTask Task { get; set; }
         public User User { get; set; }
     }
 }
