@@ -24,6 +24,7 @@ namespace Task_Management_System
     {
         private readonly IProjectService _projectService;
         private readonly int _projectId;
+        private Project _currentProject;
 
         public EditProjectWindow(int projectId)
         {
@@ -35,13 +36,36 @@ namespace Task_Management_System
 
         private void LoadProjectDetails()
         {
-            var project = _projectService.GetById(_projectId);
-            if (project != null)
+            try
             {
-                txtProjectName.Text = project.ProjectName;
-                txtDescription.Text = project.Description;
-                dpStartDate.SelectedDate = project.StartDate;
-                dpEndDate.SelectedDate = project.EndDate;
+                _currentProject = _projectService.GetById(_projectId);
+                if (_currentProject != null)
+                {
+                    txtProjectName.Text = _currentProject.ProjectName;
+                    txtDescription.Text = _currentProject.Description;
+                    dpStartDate.SelectedDate = _currentProject.StartDate;
+                    dpEndDate.SelectedDate = _currentProject.EndDate;
+                    
+                    // Set the correct status in ComboBox
+                    foreach (ComboBoxItem item in cbStatus.Items)
+                    {
+                        if (item.Content.ToString() == _currentProject.Status)
+                        {
+                            cbStatus.SelectedItem = item;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Project not found.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    this.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading project details: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                this.Close();
             }
         }
 
@@ -51,27 +75,71 @@ namespace Task_Management_System
             string description = txtDescription.Text.Trim();
             DateTime? startDate = dpStartDate.SelectedDate;
             DateTime? endDate = dpEndDate.SelectedDate;
+            string status = cbStatus.Text;
 
-            if (string.IsNullOrEmpty(projectName) || startDate == null || endDate == null)
+            // Validation
+            if (string.IsNullOrEmpty(projectName))
             {
-                MessageBox.Show("Please fill in all fields.");
+                MessageBox.Show("Please enter project name.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                txtProjectName.Focus();
                 return;
             }
 
-            var project = new Project
+            if (string.IsNullOrEmpty(description))
             {
-                ProjectId = _projectId,
-                ProjectName = projectName,
-                Description = description,
-                StartDate = (DateTime)startDate,
-                EndDate = (DateTime)endDate,
-                Status = "In Progress" 
-            };
+                MessageBox.Show("Please enter project description.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                txtDescription.Focus();
+                return;
+            }
 
-            _projectService.Update(project);
-            MessageBox.Show("Project updated successfully.");
+            if (startDate == null)
+            {
+                MessageBox.Show("Please select start date.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                dpStartDate.Focus();
+                return;
+            }
+
+            if (endDate == null)
+            {
+                MessageBox.Show("Please select end date.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                dpEndDate.Focus();
+                return;
+            }
+
+            if (startDate >= endDate)
+            {
+                MessageBox.Show("End date must be after start date.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                dpEndDate.Focus();
+                return;
+            }
+
+            try
+            {
+                var project = new Project
+                {
+                    ProjectId = _projectId,
+                    ProjectName = projectName,
+                    Description = description,
+                    StartDate = (DateTime)startDate,
+                    EndDate = (DateTime)endDate,
+                    Status = status,
+                    ManagerId = _currentProject.ManagerId,
+                    DateCreated = _currentProject.DateCreated
+                };
+
+                _projectService.Update(project);
+                MessageBox.Show("Project updated successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error updating project: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void BtnCancel_Click(object sender, RoutedEventArgs e)
+        {
             this.Close();
         }
     }
-
 }

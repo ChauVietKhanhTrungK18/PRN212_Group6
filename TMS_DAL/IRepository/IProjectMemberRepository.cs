@@ -9,12 +9,14 @@ namespace TMS_DAL.IRepository
 {
     public interface IProjectMemberRepository
     {
+        ProjectMember GetById(int projectMemberId);
+        IEnumerable<ProjectMember> GetAll();
         IEnumerable<User> GetMembersByProjectId(int projectId);
         void AddMemberToProject(int projectId, int userId);
         void RemoveMemberFromProject(int projectId, int userId);
+        void Delete(int projectMemberId);
         IEnumerable<Project> GetProjectsByManager(int managerId);
         IEnumerable<User> GetMembersByProjectIds(List<int> projectIds);
         IEnumerable<User> GetUsersNotInProject(int projectId);
-
     }
 }

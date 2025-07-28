@@ -5,8 +5,311 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Task_Management_System"
         mc:Ignorable="d"
-        Title="MemberWindow" Height="450" Width="800">
-    <Grid>
-        
+        Title="Member Dashboard" Height="700" Width="1000" WindowStartupLocation="CenterScreen">
+    
+    <Grid Background="#f4f6fa">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="White" Padding="20" Margin="0,0,0,20">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="Member Dashboard" FontSize="28" FontWeight="Bold" Foreground="#2c3e50"/>
+                    <TextBlock x:Name="txtWelcomeMessage" Text="Welcome, Member!" FontSize="16" Foreground="#7f8c8d" Margin="0,5,0,0"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <Button Content="My Profile" Width="100" Height="35" Margin="5" 
+                            Background="#3498db" Foreground="White" Click="BtnMyProfile_Click"/>
+                    <Button Content="Change Password" Width="120" Height="35" Margin="5" 
+                            Background="#e74c3c" Foreground="White" Click="BtnChangePassword_Click"/>
+                    <Button Content="Logout" Width="80" Height="35" Margin="5" 
+                            Background="#95a5a6" Foreground="White" Click="BtnLogout_Click"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Main Content -->
+        <TabControl Grid.Row="1" Margin="20,0,20,20">
+            
+            <!-- My Tasks Tab -->
+            <TabItem Header="My Tasks">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="10">
+                        <GroupBox Header="Task Overview" Margin="0,0,0,20">
+                            <Grid Margin="10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                                    <TextBlock Text="Total Tasks" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                    <TextBlock x:Name="txtTotalTasks" Text="0" FontSize="24" HorizontalAlignment="Center" Margin="0,5"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                                    <TextBlock Text="In Progress" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                    <TextBlock x:Name="txtInProgressTasks" Text="0" FontSize="24" HorizontalAlignment="Center" Margin="0,5"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                                    <TextBlock Text="Completed" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                    <TextBlock x:Name="txtCompletedTasks" Text="0" FontSize="24" HorizontalAlignment="Center" Margin="0,5"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="3" HorizontalAlignment="Center">
+                                    <TextBlock Text="Overdue" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                    <TextBlock x:Name="txtOverdueTasks" Text="0" FontSize="24" HorizontalAlignment="Center" Margin="0,5"/>
+                                </StackPanel>
+                            </Grid>
+                        </GroupBox>
+
+                        <GroupBox Header="My Tasks" Margin="0,0,0,20">
+                            <Grid Margin="10">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- Search and Filter -->
+                                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                                    <TextBlock Text="Search:" VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="Bold"/>
+                                    <TextBox x:Name="txtSearchTasks" Width="300" Height="30" TextChanged="txtSearchTasks_TextChanged" 
+                                             VerticalAlignment="Center" Margin="0,0,20,0"/>
+                                    
+                                    <TextBlock Text="Status:" VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="Bold"/>
+                                    <ComboBox x:Name="cbTaskStatusFilter" Width="150" Height="30" SelectionChanged="cbTaskStatusFilter_SelectionChanged">
+                                        <ComboBoxItem Content="All Tasks" IsSelected="True"/>
+                                        <ComboBoxItem Content="Not Started"/>
+                                        <ComboBoxItem Content="In Progress"/>
+                                        <ComboBoxItem Content="Completed"/>
+                                        <ComboBoxItem Content="Overdue"/>
+                                    </ComboBox>
+                                    
+                                    <Button Content="Refresh" Width="80" Height="30" Margin="20,0,0,0" 
+                                            Background="#27ae60" Foreground="White" Click="BtnRefreshTasks_Click"/>
+                                </StackPanel>
+
+                                <!-- Tasks DataGrid -->
+                                <DataGrid x:Name="dgMyTasks" Grid.Row="1" AutoGenerateColumns="False" Height="300"
+                                          IsReadOnly="True" SelectionMode="Single" 
+                                          GridLinesVisibility="All" HeadersVisibility="All"
+                                          AlternatingRowBackground="#f8f9fa" RowBackground="White"
+                                          MouseDoubleClick="dgMyTasks_MouseDoubleClick">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Task Name" Binding="{Binding TaskName}" Width="200"/>
+                                        <DataGridTextColumn Header="Project" Binding="{Binding ProjectName}" Width="150"/>
+                                        <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="250"/>
+                                        <DataGridTextColumn Header="Deadline" Binding="{Binding Deadline, StringFormat=dd/MM/yyyy}" Width="100"/>
+                                        <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="100"/>
+                                        <DataGridTextColumn Header="Created Date" Binding="{Binding DateCreated, StringFormat=dd/MM/yyyy}" Width="120"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
+                        </GroupBox>
+
+                        <!-- Action Buttons -->
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
+                            <Button Content="Update Task Status" Width="150" Height="35" Margin="10" 
+                                    Background="#f39c12" Foreground="White" Click="BtnUpdateTaskStatus_Click"/>
+                            <Button Content="View Task Details" Width="150" Height="35" Margin="10" 
+                                    Background="#9b59b6" Foreground="White" Click="BtnViewTaskDetails_Click"/>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- My Projects Tab -->
+            <TabItem Header="My Projects">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="10">
+                        <GroupBox Header="Project Overview" Margin="0,0,0,20">
+                            <Grid Margin="10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                                    <TextBlock Text="Total Projects" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                    <TextBlock x:Name="txtTotalProjects" Text="0" FontSize="24" HorizontalAlignment="Center" Margin="0,5"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                                    <TextBlock Text="Active Projects" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                    <TextBlock x:Name="txtActiveProjects" Text="0" FontSize="24" HorizontalAlignment="Center" Margin="0,5"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                                    <TextBlock Text="Completed Projects" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                    <TextBlock x:Name="txtCompletedProjects" Text="0" FontSize="24" HorizontalAlignment="Center" Margin="0,5"/>
+                                </StackPanel>
+                            </Grid>
+                        </GroupBox>
+
+                        <GroupBox Header="My Projects" Margin="0,0,0,20">
+                            <Grid Margin="10">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- Search -->
+                                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                                    <TextBlock Text="Search:" VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="Bold"/>
+                                    <TextBox x:Name="txtSearchProjects" Width="300" Height="30" TextChanged="txtSearchProjects_TextChanged" 
+                                             VerticalAlignment="Center" Margin="0,0,20,0"/>
+                                    
+                                    <Button Content="Refresh" Width="80" Height="30" 
+                                            Background="#27ae60" Foreground="White" Click="BtnRefreshProjects_Click"/>
+                                </StackPanel>
+
+                                <!-- Projects DataGrid -->
+                                <DataGrid x:Name="dgMyProjects" Grid.Row="1" AutoGenerateColumns="False" Height="300"
+                                          IsReadOnly="True" SelectionMode="Single" 
+                                          GridLinesVisibility="All" HeadersVisibility="All"
+                                          AlternatingRowBackground="#f8f9fa" RowBackground="White"
+                                          MouseDoubleClick="dgMyProjects_MouseDoubleClick">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Project Name" Binding="{Binding ProjectName}" Width="200"/>
+                                        <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="300"/>
+                                        <DataGridTextColumn Header="Manager" Binding="{Binding ManagerName}" Width="150"/>
+                                        <DataGridTextColumn Header="Start Date" Binding="{Binding StartDate, StringFormat=dd/MM/yyyy}" Width="100"/>
+                                        <DataGridTextColumn Header="End Date" Binding="{Binding EndDate, StringFormat=dd/MM/yyyy}" Width="100"/>
+                                        <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="100"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
+                        </GroupBox>
+
+                        <!-- Action Buttons -->
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
+                            <Button Content="View Project Details" Width="150" Height="35" Margin="10" 
+                                    Background="#3498db" Foreground="White" Click="BtnViewProjectDetails_Click"/>
+                            <Button Content="View Project Tasks" Width="150" Height="35" Margin="10" 
+                                    Background="#e67e22" Foreground="White" Click="BtnViewProjectTasks_Click"/>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- Notifications Tab -->
+            <TabItem Header="Notifications">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="10">
+                        <GroupBox Header="My Notifications" Margin="0,0,0,20">
+                            <Grid Margin="10">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- Search and Filter -->
+                                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                                    <TextBlock Text="Search:" VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="Bold"/>
+                                    <TextBox x:Name="txtSearchNotifications" Width="300" Height="30" TextChanged="txtSearchNotifications_TextChanged" 
+                                             VerticalAlignment="Center" Margin="0,0,20,0"/>
+                                    
+                                    <TextBlock Text="Filter:" VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="Bold"/>
+                                    <ComboBox x:Name="cbNotificationFilter" Width="150" Height="30" SelectionChanged="cbNotificationFilter_SelectionChanged">
+                                        <ComboBoxItem Content="All Notifications" IsSelected="True"/>
+                                        <ComboBoxItem Content="Unread Only"/>
+                                        <ComboBoxItem Content="Read Only"/>
+                                    </ComboBox>
+                                    
+                                    <Button Content="Refresh" Width="80" Height="30" Margin="20,0,0,0" 
+                                            Background="#27ae60" Foreground="White" Click="BtnRefreshNotifications_Click"/>
+                                </StackPanel>
+
+                                <!-- Notifications DataGrid -->
+                                <DataGrid x:Name="dgNotifications" Grid.Row="1" AutoGenerateColumns="False" Height="400"
+                                          IsReadOnly="True" SelectionMode="Single" 
+                                          GridLinesVisibility="All" HeadersVisibility="All"
+                                          AlternatingRowBackground="#f8f9fa" RowBackground="White"
+                                          MouseDoubleClick="dgNotifications_MouseDoubleClick">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Message" Binding="{Binding Message}" Width="400"/>
+                                        <DataGridTextColumn Header="Date" Binding="{Binding DateCreated, StringFormat=dd/MM/yyyy HH:mm}" Width="150"/>
+                                        <DataGridTextColumn Header="Read" Binding="{Binding IsRead}" Width="80"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
+                        </GroupBox>
+
+                        <!-- Action Buttons -->
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
+                            <Button Content="Mark as Read" Width="120" Height="35" Margin="10" 
+                                    Background="#28a745" Foreground="White" Click="BtnMarkAsRead_Click"/>
+                            <Button Content="Mark All as Read" Width="140" Height="35" Margin="10" 
+                                    Background="#17a2b8" Foreground="White" Click="BtnMarkAllAsRead_Click"/>
+                            <Button Content="Delete" Width="120" Height="35" Margin="10" 
+                                    Background="#dc3545" Foreground="White" Click="BtnDeleteNotification_Click"/>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- Attachments Tab -->
+            <TabItem Header="Attachments">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="10">
+                        <GroupBox Header="My Attachments" Margin="0,0,0,20">
+                            <Grid Margin="10">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- Search -->
+                                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                                    <TextBlock Text="Search:" VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="Bold"/>
+                                    <TextBox x:Name="txtSearchAttachments" Width="300" Height="30" TextChanged="txtSearchAttachments_TextChanged" 
+                                             VerticalAlignment="Center" Margin="0,0,20,0"/>
+                                    
+                                    <Button Content="Refresh" Width="80" Height="30" 
+                                            Background="#27ae60" Foreground="White" Click="BtnRefreshAttachments_Click"/>
+                                </StackPanel>
+
+                                <!-- Attachments DataGrid -->
+                                <DataGrid x:Name="dgAttachments" Grid.Row="1" AutoGenerateColumns="False" Height="400"
+                                          IsReadOnly="True" SelectionMode="Single" 
+                                          GridLinesVisibility="All" HeadersVisibility="All"
+                                          AlternatingRowBackground="#f8f9fa" RowBackground="White"
+                                          MouseDoubleClick="dgAttachments_MouseDoubleClick">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="File Name" Binding="{Binding FileName}" Width="200"/>
+                                        <DataGridTextColumn Header="Project/Task" Binding="{Binding RelatedTo}" Width="150"/>
+                                        <DataGridTextColumn Header="Upload Date" Binding="{Binding DateUploaded, StringFormat=dd/MM/yyyy}" Width="120"/>
+                                        <DataGridTextColumn Header="File Size" Binding="{Binding FileSize}" Width="100"/>
+                                        <DataGridTextColumn Header="Uploaded By" Binding="{Binding UploadedBy}" Width="150"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
+                        </GroupBox>
+
+                        <!-- Action Buttons -->
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
+                            <Button Content="Download" Width="120" Height="35" Margin="10" 
+                                    Background="#17a2b8" Foreground="White" Click="BtnDownloadAttachment_Click"/>
+                            <Button Content="View Details" Width="120" Height="35" Margin="10" 
+                                    Background="#6c757d" Foreground="White" Click="BtnViewAttachmentDetails_Click"/>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+        </TabControl>
     </Grid>
 </Window>

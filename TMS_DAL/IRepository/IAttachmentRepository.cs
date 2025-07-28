@@ -6,6 +6,7 @@ namespace TMS_DAL.IRepository
     public interface IAttachmentRepository
     {
         Attachment GetById(int attachmentId);
+        IEnumerable<Attachment> GetAll();
         IEnumerable<Attachment> GetByTaskId(int taskId);
         IEnumerable<Attachment> GetByProjectId(int projectId);
         void Add(Attachment attachment);

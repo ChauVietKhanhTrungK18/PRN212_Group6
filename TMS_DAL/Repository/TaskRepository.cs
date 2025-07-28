@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMS_DAL.Model;
@@ -25,9 +26,21 @@ namespace TMS_DAL.Repository
             _context.SaveChanges();
         }
 
+        public void Delete(int taskId)
+        {
+            var task = _context.ProjectTasks.Find(taskId);
+            if (task != null)
+            {
+                _context.ProjectTasks.Remove(task);
+                _context.SaveChanges();
+            }
+        }
+
         public IEnumerable<ProjectTask> GetByAssignedUserId(int userId)
         {
-            throw new NotImplementedException();
+            // This requires TaskAssignment table to be implemented
+            // For now, return empty list as placeholder
+            return new List<ProjectTask>();
         }
     }
 } 

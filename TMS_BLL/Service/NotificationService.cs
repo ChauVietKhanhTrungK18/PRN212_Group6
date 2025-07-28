@@ -35,5 +35,32 @@ namespace TMS_BLL.Service
             _notificationRepository.Delete(id);
             _notificationRepository.SaveChanges();
         }
+
+        public IEnumerable<Notification> GetNotificationsByUserId(int userId)
+        {
+            return _notificationRepository.GetByUserId(userId);
+        }
+
+        public void MarkAsRead(int notificationId)
+        {
+            var notification = _notificationRepository.GetById(notificationId);
+            if (notification != null)
+            {
+                notification.IsRead = true;
+                _notificationRepository.Update(notification);
+                _notificationRepository.SaveChanges();
+            }
+        }
+
+        public void MarkAllAsRead(int userId)
+        {
+            var notifications = _notificationRepository.GetByUserId(userId);
+            foreach (var notification in notifications)
+            {
+                notification.IsRead = true;
+                _notificationRepository.Update(notification);
+            }
+            _notificationRepository.SaveChanges();
+        }
     }
 } 

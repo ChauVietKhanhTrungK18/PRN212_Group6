@@ -5,16 +5,23 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Task_Management_System"
         mc:Ignorable="d"
-        Title="Add Member to Project" Height="300" Width="400">
+        Title="Add Member to Project" Height="350" Width="450" WindowStartupLocation="CenterScreen">
     <Grid Background="#f4f6fa">
-        <StackPanel Margin="20">
-            <TextBlock Text="Add Member to Project" FontSize="28" FontWeight="Bold" Margin="0,0,0,20"/>
+        <StackPanel Margin="30">
+            <TextBlock Text="Add Member to Project" FontSize="24" FontWeight="Bold" Margin="0,0,0,30" HorizontalAlignment="Center"/>
 
             <!-- User Selection -->
-            <ComboBox x:Name="cbUsers" Width="300" Margin="0,0,0,20"/>
+            <TextBlock Text="Select Member:" FontWeight="Bold" Margin="0,0,0,10"/>
+            <ComboBox x:Name="cbUsers" Width="350" Height="35" Margin="0,0,0,30" 
+                      FontSize="14" Padding="10,5"/>
 
-            <!-- Add Member Button -->
-            <Button Content="Add Member" Width="150" HorizontalAlignment="Center" Click="BtnAddMember_Click"/>
+            <!-- Action Buttons -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
+                <Button Content="Add Member" Width="120" Height="35" Margin="10" 
+                        Background="#28a745" Foreground="White" FontWeight="Bold" Click="BtnAddMember_Click"/>
+                <Button Content="Cancel" Width="120" Height="35" Margin="10" 
+                        Background="#6c757d" Foreground="White" FontWeight="Bold" Click="BtnCancel_Click"/>
+            </StackPanel>
         </StackPanel>
     </Grid>
 </Window>

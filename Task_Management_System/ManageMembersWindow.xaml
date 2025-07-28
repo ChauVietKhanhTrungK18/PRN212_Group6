@@ -5,32 +5,43 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Task_Management_System"
         mc:Ignorable="d"
-       Title="Manage Members" Height="400" Width="600">
-    <Grid Background="#f4f6fa" Margin="0,0,0,-16">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="83*"/>
-            <ColumnDefinition Width="37*"/>
-        </Grid.ColumnDefinitions>
-        <StackPanel Margin="20,20,20,20" Grid.ColumnSpan="2">
-            <TextBlock Text="Manage Project Members" FontSize="28" FontWeight="Bold" Margin="0,0,0,20"/>
+        Title="Manage Project Members" Height="500" Width="700" WindowStartupLocation="CenterScreen">
+    <Grid Background="#f4f6fa" Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
-            <!-- Project Selection -->
-            <ComboBox x:Name="cbProjects" Width="300" Margin="0,0,0,20" SelectionChanged="CbProjects_SelectionChanged"/>
+        <!-- Header -->
+        <TextBlock x:Name="txtProjectTitle" Grid.Row="0" Text="Manage Project Members" FontSize="24" FontWeight="Bold" 
+                   Margin="0,0,0,20" HorizontalAlignment="Center"/>
 
-            <!-- Member List -->
-            <DataGrid x:Name="dgMembers" AutoGenerateColumns="False" Height="200" IsReadOnly="True" SelectionMode="Single">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Full Name" Binding="{Binding FullName}" Width="200"/>
-                    <DataGridTextColumn Header="Username" Binding="{Binding Username}" Width="150"/>
-                    <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="200"/>
-                </DataGrid.Columns>
-            </DataGrid>
+        <!-- Refresh Button -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,20">
+            <Button Content="Refresh" Width="80" Height="35" 
+                    Background="#17a2b8" Foreground="White" FontWeight="Bold" Click="BtnRefresh_Click"/>
+        </StackPanel>
 
-            <!-- Action Buttons -->
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
-                <Button Content="Add Member" Width="150" Margin="10" Click="BtnAddMember_Click"/>
-                <Button Content="Remove Member" Width="150" Margin="10" Click="BtnRemoveMember_Click"/>
-            </StackPanel>
+        <!-- Member List -->
+        <DataGrid x:Name="dgMembers" Grid.Row="2" AutoGenerateColumns="False" IsReadOnly="True" 
+                  SelectionMode="Single" Margin="0,0,0,20"
+                  GridLinesVisibility="All" HeadersVisibility="All"
+                  AlternatingRowBackground="#f8f9fa" RowBackground="White">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Full Name" Binding="{Binding FullName}" Width="200"/>
+                <DataGridTextColumn Header="Username" Binding="{Binding Username}" Width="150"/>
+                <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="250"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Action Buttons -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button Content="Add Member" Width="150" Height="40" Margin="10" 
+                    Background="#28a745" Foreground="White" FontWeight="Bold" Click="BtnAddMember_Click"/>
+            <Button Content="Remove Member" Width="150" Height="40" Margin="10" 
+                    Background="#dc3545" Foreground="White" FontWeight="Bold" Click="BtnRemoveMember_Click"/>
         </StackPanel>
     </Grid>
 </Window>

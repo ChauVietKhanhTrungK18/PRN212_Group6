@@ -14,8 +14,8 @@ namespace TMS_DAL.Repository
             _context = context;
         }
 
-        public Role GetById(int roleId) => _context.Roles.Find(roleId);
-        public Role GetByName(string roleName) => _context.Roles.FirstOrDefault(r => r.RoleName == roleName);
+        public Role? GetById(int roleId) => _context.Roles.Find(roleId);
+        public Role? GetByName(string roleName) => _context.Roles.FirstOrDefault(r => r.RoleName == roleName);
         public IEnumerable<Role> GetAll() => _context.Roles.ToList();
         public void Add(Role role) { _context.Roles.Add(role); _context.SaveChanges(); }
         public void Update(Role role) { _context.Roles.Update(role); _context.SaveChanges(); }

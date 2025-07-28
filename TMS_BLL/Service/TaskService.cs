@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using TMS_BLL.IService;
 using TMS_DAL.IRepository;
 using TMS_DAL.Model;
@@ -19,9 +20,14 @@ namespace TMS_BLL.Service
         public ProjectTask GetById(int taskId) => _taskRepository.GetById(taskId);
         public IEnumerable<ProjectTask> GetByProjectId(int projectId) => _taskRepository.GetByProjectId(projectId);
         public IEnumerable<ProjectTask> GetByAssignedUserId(int userId) => _taskRepository.GetByAssignedUserId(userId);
-        public void AddTask(ProjectTask task)
+        public int AddTask(ProjectTask task)
         {
             _taskRepository.Add(task);
+            // Get the created task ID by finding the latest task for this project
+            var createdTask = _taskRepository.GetByProjectId(task.ProjectId)
+                .OrderByDescending(t => t.DateCreated)
+                .FirstOrDefault();
+            return createdTask?.TaskId ?? 0;
         }
         public void Update(ProjectTask task) => _taskRepository.Update(task);
         public void UpdateStatus(int taskId, string status)

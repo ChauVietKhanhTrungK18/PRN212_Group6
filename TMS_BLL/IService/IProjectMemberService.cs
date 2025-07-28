@@ -16,5 +16,7 @@ namespace TMS_BLL.IService
         IEnumerable<Project> GetProjectsForManager(int managerId);
         IEnumerable<User> GetProjectMembersForProject(int projectId);
         IEnumerable<User> GetUsersNotInProject(int projectId);
+        IEnumerable<ProjectMember> GetMembersByProject(int projectId);
+        IEnumerable<ProjectMember> GetMembersByProjectId(int projectId);
     }
 }

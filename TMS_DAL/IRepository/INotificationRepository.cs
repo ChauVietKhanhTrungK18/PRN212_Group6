@@ -10,5 +10,7 @@ namespace TMS_DAL.IRepository
         void Add(Notification notification);
         void Delete(int id);
         void SaveChanges();
+        IEnumerable<Notification> GetByUserId(int userId);
+        void Update(Notification notification);
     }
 } 

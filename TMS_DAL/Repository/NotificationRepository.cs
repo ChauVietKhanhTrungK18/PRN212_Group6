@@ -41,5 +41,15 @@ namespace TMS_DAL.Repository
         {
             _context.SaveChanges();
         }
+
+        public IEnumerable<Notification> GetByUserId(int userId)
+        {
+            return _context.Notifications.Where(n => n.UserId == userId).ToList();
+        }
+
+        public void Update(Notification notification)
+        {
+            _context.Notifications.Update(notification);
+        }
     }
 } 

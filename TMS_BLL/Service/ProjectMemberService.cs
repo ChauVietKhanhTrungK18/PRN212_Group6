@@ -53,5 +53,15 @@ namespace TMS_BLL.Service
         {
             return _projectMemberRepository.GetUsersNotInProject(projectId); 
         }
+
+        public IEnumerable<ProjectMember> GetMembersByProject(int projectId)
+        {
+            return _projectMemberRepository.GetAll().Where(pm => pm.ProjectId == projectId);
+        }
+
+        public IEnumerable<ProjectMember> GetMembersByProjectId(int projectId)
+        {
+            return _projectMemberRepository.GetAll().Where(pm => pm.ProjectId == projectId);
+        }
     }
 }

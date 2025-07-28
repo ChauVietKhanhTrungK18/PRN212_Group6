@@ -14,5 +14,6 @@ namespace TMS_BLL.IService
         IEnumerable<User> GetByRole(int roleId, bool includeDeleted = false);
         bool SetDeletedStatus(int userId, bool isDeleted);
         bool UpdateRole(int userId, int roleId);
+        void Update(User user);
     }
 } 

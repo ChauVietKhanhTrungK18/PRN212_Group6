@@ -5,29 +5,64 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Task_Management_System"
         mc:Ignorable="d"
-       Title="Manage Tasks" Height="400" Width="600">
-    <Grid Background="#f4f6fa" Margin="0,0,-129,-16">
-        <StackPanel Margin="20">
-            <TextBlock Text="Manage Project Tasks" FontSize="28" FontWeight="Bold" Margin="0,0,0,20"/>
+        Title="Manage Tasks" Height="750" Width="1100" WindowStartupLocation="CenterScreen" ResizeMode="CanResize">
+    <Grid Background="#f4f6fa" Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
-            <!-- Project Selection -->
-            <ComboBox x:Name="cbProjects" Width="300" Margin="0,0,0,20" SelectionChanged="CbProjects_SelectionChanged"/>
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,20">
+            <TextBlock x:Name="txtProjectTitle" Text="Manage Tasks" FontSize="24" FontWeight="Bold" Margin="0,0,0,10"/>
+            <TextBlock x:Name="txtProjectInfo" Text="Project: " FontSize="14" FontWeight="Bold"/>
+        </StackPanel>
 
-            <!-- Task List -->
-            <DataGrid x:Name="dgTasks" AutoGenerateColumns="False" Height="200" IsReadOnly="True" SelectionMode="Single">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Task Name" Binding="{Binding TaskName}" Width="200"/>
-                    <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="300"/>
-                    <DataGridTextColumn Header="Deadline" Binding="{Binding Deadline}" Width="100"/>
-                    <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="100"/>
-                </DataGrid.Columns>
-            </DataGrid>
+        <!-- Search and Filters -->
+        <Grid Grid.Row="1" Margin="0,0,0,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
 
-            <!-- Action Buttons -->
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
-                <Button Content="Add Task" Width="150" Margin="10" Click="BtnAddTask_Click"/>
-                <Button Content="Remove Task" Width="150" Margin="10" Click="BtnRemoveTask_Click"/>
+            <StackPanel Grid.Column="0" Orientation="Horizontal">
+                <TextBlock Text="Search:" VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="Bold"/>
+                <TextBox x:Name="txtSearch" Width="300" Height="30" TextChanged="txtSearch_TextChanged" 
+                         VerticalAlignment="Center" Margin="0,0,20,0"/>
             </StackPanel>
+        </Grid>
+
+        <!-- Task List -->
+        <DataGrid x:Name="dgTasks" Grid.Row="2" AutoGenerateColumns="False" 
+                  IsReadOnly="True" SelectionMode="Single" 
+                  GridLinesVisibility="All" HeadersVisibility="All"
+                  AlternatingRowBackground="#f8f9fa" RowBackground="White"
+                  MouseDoubleClick="dgTasks_MouseDoubleClick">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Task Name" Binding="{Binding TaskName}" Width="200"/>
+                <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="250"/>
+                <DataGridTextColumn Header="Deadline" Binding="{Binding Deadline, StringFormat=dd/MM/yyyy}" Width="100"/>
+                <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="100"/>
+                <DataGridTextColumn Header="Assigned To" Binding="{Binding AssignedMembers}" Width="150"/>
+                <DataGridTextColumn Header="Created Date" Binding="{Binding DateCreated, StringFormat=dd/MM/yyyy}" Width="120"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Action Buttons -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
+            <Button Content="Create Task" Width="150" Height="35" Margin="10" 
+                    Background="#007bff" Foreground="White" FontWeight="Bold" Click="BtnCreateTask_Click"/>
+            <Button Content="Edit Task" Width="150" Height="35" Margin="10" 
+                    Background="#28a745" Foreground="White" FontWeight="Bold" Click="BtnEditTask_Click"/>
+            <Button Content="Delete Task" Width="150" Height="35" Margin="10" 
+                    Background="#dc3545" Foreground="White" FontWeight="Bold" Click="BtnDeleteTask_Click"/>
+            <Button Content="Update Status" Width="150" Height="35" Margin="10" 
+                    Background="#ffc107" Foreground="Black" FontWeight="Bold" Click="BtnUpdateStatus_Click"/>
+            <Button Content="Refresh" Width="150" Height="35" Margin="10" 
+                    Background="#6c757d" Foreground="White" FontWeight="Bold" Click="BtnRefresh_Click"/>
         </StackPanel>
     </Grid>
 </Window>

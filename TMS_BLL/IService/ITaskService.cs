@@ -1,5 +1,5 @@
-using TMS_DAL.Model;
 using System.Collections.Generic;
+using TMS_DAL.Model;
 
 namespace TMS_BLL.IService
 {
@@ -8,12 +8,12 @@ namespace TMS_BLL.IService
         ProjectTask GetById(int taskId);
         IEnumerable<ProjectTask> GetByProjectId(int projectId);
         IEnumerable<ProjectTask> GetByAssignedUserId(int userId);
-        void AddTask(ProjectTask task);
+        int AddTask(ProjectTask task);
         void Update(ProjectTask task);
-        void RemoveTask(int taskId);
         void UpdateStatus(int taskId, string status);
-        IEnumerable<ProjectTask> GetAll();
         IEnumerable<Project> GetProjectsForManager(int managerId);
         IEnumerable<ProjectTask> GetTasksForProject(int projectId);
+        void RemoveTask(int taskId);
+        IEnumerable<ProjectTask> GetAll();
     }
 } 

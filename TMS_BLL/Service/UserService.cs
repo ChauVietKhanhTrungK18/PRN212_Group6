@@ -104,11 +104,18 @@ namespace TMS_BLL.Service
         public bool UpdateRole(int userId, int roleId)
         {
             var user = _userRepository.GetById(userId);
-            if (user == null || user.RoleId == 1) return false;
+            if (user == null) return false;
+
             user.RoleId = roleId;
             _userRepository.Update(user);
             _userRepository.SaveChanges();
             return true;
+        }
+
+        public void Update(User user)
+        {
+            _userRepository.Update(user);
+            _userRepository.SaveChanges();
         }
     }
 } 

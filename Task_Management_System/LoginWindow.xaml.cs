@@ -57,7 +57,7 @@ namespace Task_Management_System
 
                 case 3:
                 default:
-                    var memberWindow = new MemberWindow();
+                    var memberWindow = new MemberWindow(user.UserId);
                     memberWindow.Show();
                     break;
             }

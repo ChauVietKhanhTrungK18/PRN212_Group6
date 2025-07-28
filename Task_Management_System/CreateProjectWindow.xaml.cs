@@ -30,6 +30,10 @@ namespace Task_Management_System
             InitializeComponent();
             _managerId = managerId;
             _projectService = App.ServiceProvider.GetRequiredService<IProjectService>();
+            
+            // Set default dates
+            dpStartDate.SelectedDate = DateTime.Today;
+            dpEndDate.SelectedDate = DateTime.Today.AddMonths(1);
         }
 
         private void BtnCreateProject_Click(object sender, RoutedEventArgs e)
@@ -38,27 +42,70 @@ namespace Task_Management_System
             string description = txtDescription.Text.Trim();
             DateTime? startDate = dpStartDate.SelectedDate;
             DateTime? endDate = dpEndDate.SelectedDate;
+            string status = cbStatus.Text;
 
-            if (string.IsNullOrEmpty(projectName) || startDate == null || endDate == null)
+            // Validation
+            if (string.IsNullOrEmpty(projectName))
             {
-                MessageBox.Show("Please fill in all fields.");
+                MessageBox.Show("Please enter project name.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                txtProjectName.Focus();
                 return;
             }
 
-            var project = new Project
+            if (string.IsNullOrEmpty(description))
             {
-                ProjectName = projectName,
-                Description = description,
-                StartDate = (DateTime)startDate,
-                EndDate = (DateTime)endDate,
-                ManagerId = _managerId,
-                Status = "In Progress"  
-            };
+                MessageBox.Show("Please enter project description.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                txtDescription.Focus();
+                return;
+            }
 
-            _projectService.Add(project);
-            MessageBox.Show("Project created successfully.");
+            if (startDate == null)
+            {
+                MessageBox.Show("Please select start date.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                dpStartDate.Focus();
+                return;
+            }
+
+            if (endDate == null)
+            {
+                MessageBox.Show("Please select end date.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                dpEndDate.Focus();
+                return;
+            }
+
+            if (startDate >= endDate)
+            {
+                MessageBox.Show("End date must be after start date.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                dpEndDate.Focus();
+                return;
+            }
+
+            try
+            {
+                var project = new Project
+                {
+                    ProjectName = projectName,
+                    Description = description,
+                    StartDate = (DateTime)startDate,
+                    EndDate = (DateTime)endDate,
+                    Status = status,
+                    ManagerId = _managerId,
+                    DateCreated = DateTime.Now
+                };
+
+                _projectService.Add(project);
+                MessageBox.Show("Project created successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error creating project: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void BtnCancel_Click(object sender, RoutedEventArgs e)
+        {
             this.Close();
         }
     }
-
 }

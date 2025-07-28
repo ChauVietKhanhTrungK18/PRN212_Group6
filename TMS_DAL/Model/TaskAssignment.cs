@@ -13,7 +13,7 @@ namespace TMS_DAL.Model
         public int UserId { get; set; }
         public DateTime AssignedAt { get; set; }
 
-        public ProjectTask Task { get; set; }
-        public User User { get; set; }
+        public ProjectTask? Task { get; set; }
+        public User? User { get; set; }
     }
 }

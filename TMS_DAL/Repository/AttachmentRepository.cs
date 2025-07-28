@@ -15,6 +15,7 @@ namespace TMS_DAL.Repository
         }
 
         public Attachment GetById(int attachmentId) => _context.Attachments.Find(attachmentId);
+        public IEnumerable<Attachment> GetAll() => _context.Attachments.ToList();
         public IEnumerable<Attachment> GetByTaskId(int taskId) => _context.Attachments.Where(a => a.TaskId == taskId).ToList();
         public IEnumerable<Attachment> GetByProjectId(int projectId) => _context.Attachments.Where(a => a.ProjectId == projectId).ToList();
         public void Add(Attachment attachment) { _context.Attachments.Add(attachment); _context.SaveChanges(); }

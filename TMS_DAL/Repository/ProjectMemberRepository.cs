@@ -18,11 +18,22 @@ namespace TMS_DAL.Repository
             _context = context;
         }
 
+        public ProjectMember GetById(int projectMemberId)
+        {
+            return _context.ProjectMembers.Find(projectMemberId);
+        }
+
+        public IEnumerable<ProjectMember> GetAll()
+        {
+            return _context.ProjectMembers.ToList();
+        }
+
         public IEnumerable<User> GetMembersByProjectId(int projectId)
         {
             return _context.ProjectMembers
                 .Where(pm => pm.ProjectId == projectId)
                 .Select(pm => pm.User)
+                .Where(u => u != null)
                 .ToList();
         }
 
@@ -48,19 +59,33 @@ namespace TMS_DAL.Repository
                 _context.SaveChanges();
             }
         }
+
+        public void Delete(int projectMemberId)
+        {
+            var projectMember = _context.ProjectMembers.Find(projectMemberId);
+            if (projectMember != null)
+            {
+                _context.ProjectMembers.Remove(projectMember);
+                _context.SaveChanges();
+            }
+        }
+
         public IEnumerable<Project> GetProjectsByManager(int managerId)
         {
             return _context.Projects
                            .Where(p => p.ManagerId == managerId) 
                            .ToList();
         }
+        
         public IEnumerable<User> GetMembersByProjectIds(List<int> projectIds)
         {
             return _context.ProjectMembers
                            .Where(pm => projectIds.Contains(pm.ProjectId))
                            .Select(pm => pm.User)
+                           .Where(u => u != null)
                            .ToList();
         }
+        
         public IEnumerable<User> GetUsersNotInProject(int projectId)
         {
             var usersInProject = _context.ProjectMembers

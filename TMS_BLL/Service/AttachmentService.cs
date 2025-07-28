@@ -14,6 +14,7 @@ namespace TMS_BLL.Service
         }
 
         public Attachment GetById(int attachmentId) => _attachmentRepository.GetById(attachmentId);
+        public IEnumerable<Attachment> GetAll() => _attachmentRepository.GetAll();
         public IEnumerable<Attachment> GetByTaskId(int taskId) => _attachmentRepository.GetByTaskId(taskId);
         public IEnumerable<Attachment> GetByProjectId(int projectId) => _attachmentRepository.GetByProjectId(projectId);
         public void Add(Attachment attachment) => _attachmentRepository.Add(attachment);

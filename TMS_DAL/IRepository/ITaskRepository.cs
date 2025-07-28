@@ -11,6 +11,7 @@ namespace TMS_DAL.IRepository
         void Add(ProjectTask task);
         void Update(ProjectTask task);
         void Delete(ProjectTask task);
+        void Delete(int taskId);
         IEnumerable<ProjectTask> GetAll();
     }
 } 
