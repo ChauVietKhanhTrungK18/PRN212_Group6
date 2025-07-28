@@ -19,14 +19,10 @@ namespace TMS_DAL.Repository
         public IEnumerable<ProjectTask> GetAll() => _context.ProjectTasks.ToList();
         public void Add(ProjectTask task) { _context.ProjectTasks.Add(task); _context.SaveChanges(); }
         public void Update(ProjectTask task) { _context.ProjectTasks.Update(task); _context.SaveChanges(); }
-        public void Delete(int taskId)
+        public void Delete(ProjectTask task)
         {
-            var task = _context.ProjectTasks.Find(taskId);
-            if (task != null)
-            {
-                _context.ProjectTasks.Remove(task);
-                _context.SaveChanges();
-            }
+            _context.ProjectTasks.Remove(task);
+            _context.SaveChanges();
         }
 
         public IEnumerable<ProjectTask> GetByAssignedUserId(int userId)

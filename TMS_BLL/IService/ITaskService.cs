@@ -8,10 +8,12 @@ namespace TMS_BLL.IService
         ProjectTask GetById(int taskId);
         IEnumerable<ProjectTask> GetByProjectId(int projectId);
         IEnumerable<ProjectTask> GetByAssignedUserId(int userId);
-        void Add(ProjectTask task);
+        void AddTask(ProjectTask task);
         void Update(ProjectTask task);
-        void Delete(int taskId);
+        void RemoveTask(int taskId);
         void UpdateStatus(int taskId, string status);
         IEnumerable<ProjectTask> GetAll();
+        IEnumerable<Project> GetProjectsForManager(int managerId);
+        IEnumerable<ProjectTask> GetTasksForProject(int projectId);
     }
 } 

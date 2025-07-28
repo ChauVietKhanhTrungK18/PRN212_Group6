@@ -51,7 +51,7 @@ namespace Task_Management_System
                     break;
 
                 case 2: 
-                    var managerWindow = new ManagerWindow();
+                    var managerWindow = new ManagerWindow(user.UserId);
                     managerWindow.Show();
                     break;
 

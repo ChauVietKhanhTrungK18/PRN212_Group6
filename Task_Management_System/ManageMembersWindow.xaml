@@ -1,0 +1,36 @@
+﻿<Window x:Class="Task_Management_System.ManageMembersWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Task_Management_System"
+        mc:Ignorable="d"
+       Title="Manage Members" Height="400" Width="600">
+    <Grid Background="#f4f6fa" Margin="0,0,0,-16">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="83*"/>
+            <ColumnDefinition Width="37*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Margin="20,20,20,20" Grid.ColumnSpan="2">
+            <TextBlock Text="Manage Project Members" FontSize="28" FontWeight="Bold" Margin="0,0,0,20"/>
+
+            <!-- Project Selection -->
+            <ComboBox x:Name="cbProjects" Width="300" Margin="0,0,0,20" SelectionChanged="CbProjects_SelectionChanged"/>
+
+            <!-- Member List -->
+            <DataGrid x:Name="dgMembers" AutoGenerateColumns="False" Height="200" IsReadOnly="True" SelectionMode="Single">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Full Name" Binding="{Binding FullName}" Width="200"/>
+                    <DataGridTextColumn Header="Username" Binding="{Binding Username}" Width="150"/>
+                    <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="200"/>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <!-- Action Buttons -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
+                <Button Content="Add Member" Width="150" Margin="10" Click="BtnAddMember_Click"/>
+                <Button Content="Remove Member" Width="150" Margin="10" Click="BtnRemoveMember_Click"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>

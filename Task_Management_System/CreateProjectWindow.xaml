@@ -1,0 +1,33 @@
+﻿<Window x:Class="Task_Management_System.CreateProjectWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Task_Management_System"
+        mc:Ignorable="d"
+        Title="Create Project" Height="404" Width="400">
+    <Grid Background="#f4f6fa" Margin="10,10,10,-6">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="160"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Margin="10,20,10,20" Grid.ColumnSpan="2">
+            <TextBlock Text="Create Project" FontSize="28" FontWeight="Bold" Margin="0,0,0,20"/>
+
+            <TextBlock Text="Project Name:" FontWeight="Bold"/>
+            <TextBox x:Name="txtProjectName" Width="280" Margin="0,10,0,10"/>
+
+            <TextBlock Text="Description:" FontWeight="Bold"/>
+            <TextBox x:Name="txtDescription" Width="280" Margin="0,10,0,10"/>
+
+            <TextBlock Text="Start Date:" FontWeight="Bold"/>
+            <DatePicker x:Name="dpStartDate" Width="280" Margin="0,10,0,10"/>
+
+            <TextBlock Text="End Date:" FontWeight="Bold"/>
+            <DatePicker x:Name="dpEndDate" Width="280" Margin="0,10,0,20"/>
+
+            <Button Content="Create Project" Width="150" HorizontalAlignment="Center" Click="BtnCreateProject_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

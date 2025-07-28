@@ -10,5 +10,6 @@ namespace TMS_BLL.IService
         void Add(Project project);
         void Update(Project project);
         void Delete(int projectId);
+        IEnumerable<Project> GetProjectsByManager(int managerId);
     }
 } 

@@ -35,6 +35,8 @@ namespace Task_Management_System
             services.AddScoped<ITaskRepository, TaskRepository>();
             services.AddScoped<IAttachmentRepository, AttachmentRepository>();
             services.AddScoped<INotificationRepository, NotificationRepository>();
+            services.AddScoped<IProjectMemberRepository, ProjectMemberRepository>(); 
+
             // Service
 
             services.AddScoped<IUserService, UserService>();
@@ -44,6 +46,7 @@ namespace Task_Management_System
             services.AddScoped<IAttachmentService, AttachmentService>();
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<IReportService, ReportService>();
+            services.AddScoped<IProjectMemberService, ProjectMemberService>();
         }
     }
 }

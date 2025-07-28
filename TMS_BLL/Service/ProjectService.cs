@@ -18,5 +18,11 @@ namespace TMS_BLL.Service
         public void Add(Project project) => _projectRepository.Add(project);
         public void Update(Project project) => _projectRepository.Update(project);
         public void Delete(int projectId) => _projectRepository.Delete(projectId);
+        public IEnumerable<Project> GetProjectsByManager(int managerId)
+        {
+            return _projectRepository.GetAll()
+                                     .Where(p => p.ManagerId == managerId)
+                                     .ToList();
+        }
     }
 } 

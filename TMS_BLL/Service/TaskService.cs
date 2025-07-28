@@ -1,24 +1,29 @@
 using System.Collections.Generic;
-using TMS_DAL.Model;
-using TMS_DAL.IRepository;
 using TMS_BLL.IService;
+using TMS_DAL.IRepository;
+using TMS_DAL.Model;
+using TMS_DAL.Repository;
 
 namespace TMS_BLL.Service
 {
     public class TaskService : ITaskService
     {
         private readonly ITaskRepository _taskRepository;
-        public TaskService(ITaskRepository taskRepository)
+        private readonly IProjectRepository _projectRepository;
+        public TaskService(ITaskRepository taskRepository, IProjectRepository projectRepository)
         {
             _taskRepository = taskRepository;
+            _projectRepository = projectRepository;
         }
 
         public ProjectTask GetById(int taskId) => _taskRepository.GetById(taskId);
         public IEnumerable<ProjectTask> GetByProjectId(int projectId) => _taskRepository.GetByProjectId(projectId);
         public IEnumerable<ProjectTask> GetByAssignedUserId(int userId) => _taskRepository.GetByAssignedUserId(userId);
-        public void Add(ProjectTask task) => _taskRepository.Add(task);
+        public void AddTask(ProjectTask task)
+        {
+            _taskRepository.Add(task);
+        }
         public void Update(ProjectTask task) => _taskRepository.Update(task);
-        public void Delete(int taskId) => _taskRepository.Delete(taskId);
         public void UpdateStatus(int taskId, string status)
         {
             var task = _taskRepository.GetById(taskId);
@@ -26,6 +31,23 @@ namespace TMS_BLL.Service
             {
                 task.Status = status;
                 _taskRepository.Update(task);
+            }
+        }
+        public IEnumerable<Project> GetProjectsForManager(int managerId)
+        {
+            return _projectRepository.GetAll().Where(p => p.ManagerId == managerId).ToList();
+        }
+
+        public IEnumerable<ProjectTask> GetTasksForProject(int projectId)
+        {
+            return _taskRepository.GetAll().Where(t => t.ProjectId == projectId).ToList();
+        }
+        public void RemoveTask(int taskId)
+        {
+            var task = _taskRepository.GetById(taskId);
+            if (task != null)
+            {
+                _taskRepository.Delete(task);
             }
         }
         public IEnumerable<ProjectTask> GetAll() => _taskRepository.GetAll();

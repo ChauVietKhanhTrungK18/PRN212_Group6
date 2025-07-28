@@ -1,150 +1,63 @@
 ﻿<Window x:Class="Task_Management_System.ManagerWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Task_Management_System"
-        mc:Ignorable="d"
-                      Title="Project Management" Height="700" Width="1200" WindowStartupLocation="CenterScreen">
-    <Grid Margin="20">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+        Title="Manager Dashboard" Height="700" Width="950">
+    <Grid Background="#f4f6fa">
+        <!-- Header and Navigation -->
+        <DockPanel LastChildFill="True" Margin="20">
+            <Button x:Name="btnLogout" Content="Logout" Width="80" DockPanel.Dock="Right" HorizontalAlignment="Right" Margin="10,10,10,0" Click="BtnLogout_Click"/>
+            <TextBlock Text="Manager Dashboard" FontSize="28" FontWeight="Bold" DockPanel.Dock="Left" Margin="10,10,10,10"/>
+        </DockPanel>
 
-        <!-- Header -->
-        <Border Grid.Row="0" Background="#4CAF50" Padding="15,10" CornerRadius="5,5,0,0">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
+        <!-- Main content -->
+        <StackPanel Margin="20,20,20,-41">
+            <!-- Dashboard Section -->
+            <TextBlock Text="Dashboard" FontSize="28" FontWeight="Bold" Margin="0,0,0,20"/>
 
-                <TextBlock Grid.Column="0" Text="Project Management" 
-                           FontSize="20" FontWeight="Bold" Foreground="White" 
-                           VerticalAlignment="Center"/>
+            <!-- Stats Display Section -->
+            <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="0,20,0,20">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock Text="Total Projects: " FontSize="16" Width="200"/>
+                    <TextBlock x:Name="txtTotalProjects" FontSize="16" FontWeight="Bold" Foreground="#0078d7"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock Text="Total Tasks: " FontSize="16" Width="200"/>
+                    <TextBlock x:Name="txtTotalTasks" FontSize="16" FontWeight="Bold" Foreground="#43b581"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock Text="Total Members: " FontSize="16" Width="200"/>
+                    <TextBlock x:Name="txtTotalMembers" FontSize="16" FontWeight="Bold" Foreground="#fbbc05"/>
+                </StackPanel>
+            </StackPanel>
 
-                <Button Grid.Column="1" Content="Close" Padding="15,5" 
-                        Background="#FF5722" Foreground="White" BorderThickness="0"
-                        Click="BtnClose_Click"/>
-            </Grid>
-        </Border>
+            <!-- Project Search -->
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                <!-- Search Box -->
+                <StackPanel Orientation="Vertical" Margin="10,0,0,0">
+                    <TextBlock Text="Search by Project Name/Description" FontWeight="Bold"/>
+                    <TextBox x:Name="txtSearch" Width="200" Height="30" TextChanged="txtSearch_TextChanged"/>
+                </StackPanel>
+            </StackPanel>
 
-        <!-- Main Content -->
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
+            <!-- Project DataGrid -->
+            <TextBlock Text="Projects List" FontSize="24" FontWeight="Bold" Margin="20,20,0,10"/>
+            <DataGrid x:Name="dgProjects" AutoGenerateColumns="False"
+                      Height="300" IsReadOnly="True" SelectionMode="Single" CanUserAddRows="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Project Name" Binding="{Binding ProjectName}" Width="200"/>
+                    <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="300"/>
+                    <DataGridTextColumn Header="Start Date" Binding="{Binding StartDate}" Width="100"/>
+                    <DataGridTextColumn Header="End Date" Binding="{Binding EndDate}" Width="100"/>
+                    <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="100"/>
+                </DataGrid.Columns>
+            </DataGrid>
 
-            <!-- Project List -->
-            <Border Grid.Column="0" BorderBrush="#DDDDDD" BorderThickness="1" Margin="0,0,10,0">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-
-                    <!-- Project List Header -->
-                    <Border Grid.Row="0" Background="#F5F5F5" Padding="10">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-
-                            <TextBlock Grid.Column="0" Text="Project List" 
-                                       FontSize="16" FontWeight="Bold"/>
-
-                            <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                <Button Content="Refresh" Padding="10,5" Margin="0,0,5,0"
-                                        Background="#2196F3" Foreground="White" BorderThickness="0"
-                                        Click="BtnRefresh_Click"/>
-                                <Button Content="Add New Project" Padding="10,5"
-                                        Background="#4CAF50" Foreground="White" BorderThickness="0"
-                                        Click="BtnAddProject_Click"/>
-                            </StackPanel>
-                        </Grid>
-                    </Border>
-
-                    <!-- Project DataGrid -->
-                    <DataGrid Grid.Row="1" x:Name="dgProjects" AutoGenerateColumns="False" 
-                              IsReadOnly="True" SelectionMode="Single" 
-                              SelectionChanged="DgProjects_SelectionChanged">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="ID" Binding="{Binding ProjectId}" Width="50"/>
-                            <DataGridTextColumn Header="Project Name" Binding="{Binding ProjectName}" Width="200"/>
-                            <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="250"/>
-                            <DataGridTextColumn Header="Start Date" Binding="{Binding StartDate, StringFormat=dd/MM/yyyy}" Width="100"/>
-                            <DataGridTextColumn Header="End Date" Binding="{Binding EndDate, StringFormat=dd/MM/yyyy}" Width="100"/>
-                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="80"/>
-                            <DataGridTextColumn Header="Manager" Binding="{Binding Manager.FullName}" Width="120"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </Grid>
-            </Border>
-
-            <!-- Action Panel -->
-            <Border Grid.Column="1" BorderBrush="#DDDDDD" BorderThickness="1" Width="300">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-
-                    <!-- Action Header -->
-                    <Border Grid.Row="0" Background="#F5F5F5" Padding="10">
-                        <TextBlock Text="Actions" FontSize="16" FontWeight="Bold"/>
-                    </Border>
-
-                    <!-- Action Buttons -->
-                    <StackPanel Grid.Row="1" Margin="10">
-                        <Button x:Name="btnEditProject" Content="Edit Project" 
-                                Height="40" Margin="0,5" FontSize="14"
-                                Background="#FF9800" Foreground="White" BorderThickness="0"
-                                Click="BtnEditProject_Click" IsEnabled="False"/>
-
-                        <Button x:Name="btnDeleteProject" Content="Delete Project" 
-                                Height="40" Margin="0,5" FontSize="14"
-                                Background="#F44336" Foreground="White" BorderThickness="0"
-                                Click="BtnDeleteProject_Click" IsEnabled="False"/>
-
-                        <Button x:Name="btnManageRoles" Content="Manage Project Roles" 
-                                Height="40" Margin="0,5" FontSize="14"
-                                Background="#9C27B0" Foreground="White" BorderThickness="0"
-                                Click="BtnManageRoles_Click" IsEnabled="False"/>
-
-                        <Separator Margin="0,20"/>
-
-                        <TextBlock Text="Project Details" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
-
-                        <TextBlock Text="Project Name:" FontWeight="Bold"/>
-                        <TextBlock x:Name="txtProjectName" Text="-" Margin="0,0,0,10"/>
-
-                        <TextBlock Text="Description:" FontWeight="Bold"/>
-                        <TextBlock x:Name="txtDescription" Text="-" Margin="0,0,0,10"/>
-
-                        <TextBlock Text="Start Date:" FontWeight="Bold"/>
-                        <TextBlock x:Name="txtStartDate" Text="-" Margin="0,0,0,10"/>
-
-                        <TextBlock Text="End Date:" FontWeight="Bold"/>
-                        <TextBlock x:Name="txtEndDate" Text="-" Margin="0,0,0,10"/>
-
-                        <TextBlock Text="Status:" FontWeight="Bold"/>
-                        <TextBlock x:Name="txtProjectStatus" Text="-" Margin="0,0,0,10"/>
-
-                        <TextBlock Text="Manager:" FontWeight="Bold"/>
-                        <TextBlock x:Name="txtManager" Text="-" Margin="0,0,0,10"/>
-                    </StackPanel>
-                </Grid>
-            </Border>
-        </Grid>
-
-        <!-- Status Bar -->
-        <Border Grid.Row="2" Background="#F5F5F5" Padding="10,5" CornerRadius="0,0,5,5">
-            <TextBlock x:Name="txtStatus" Text="Ready" Foreground="#666666"/>
-        </Border>
+            <!-- Action Buttons -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
+                <Button Content="Manage Projects" Width="150" Margin="10" Click="BtnManageProjects_Click"/>
+                <Button Content="Manage Members" Width="150" Margin="10" Click="BtnManageMembers_Click"/>
+                <Button Content="Manage Tasks" Width="150" Margin="10" Click="BtnManageTasks_Click"/>
+            </StackPanel>
+        </StackPanel>
     </Grid>
-</Window> 
+</Window>
