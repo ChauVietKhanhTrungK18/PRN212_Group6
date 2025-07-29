@@ -37,8 +37,6 @@
                     <ComboBoxItem Content="Not Started"/>
                     <ComboBoxItem Content="In Progress"/>
                     <ComboBoxItem Content="Completed"/>
-                    <ComboBoxItem Content="On Hold"/>
-                    <ComboBoxItem Content="Cancelled"/>
                 </ComboBox>
             </StackPanel>
         </ScrollViewer>

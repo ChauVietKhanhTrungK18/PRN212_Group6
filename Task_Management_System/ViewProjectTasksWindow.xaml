@@ -1,0 +1,66 @@
+<Window x:Class="Task_Management_System.ViewProjectTasksWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Task_Management_System"
+        mc:Ignorable="d"
+        Title="Project Tasks" Height="626" Width="900" WindowStartupLocation="CenterScreen" ResizeMode="CanResize">
+    <Grid Background="#f4f6fa" Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,20">
+            <TextBlock x:Name="txtProjectTitle" Text="Project Tasks" FontSize="24" FontWeight="Bold" Margin="0,0,0,10"/>
+            <TextBlock x:Name="txtProjectInfo" Text="Project Information" FontSize="14" Foreground="#666"/>
+        </StackPanel>
+
+        <!-- Search and Filter -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,15">
+            <TextBlock Text="Search:" VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="Bold"/>
+            <TextBox x:Name="txtSearchTasks" Width="300" Height="30" TextChanged="txtSearchTasks_TextChanged" 
+                     VerticalAlignment="Center" Margin="0,0,20,0"/>
+            
+            <TextBlock Text="Status:" VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="Bold"/>
+            <ComboBox x:Name="cbTaskStatusFilter" Width="150" Height="30" SelectionChanged="cbTaskStatusFilter_SelectionChanged">
+                <ComboBoxItem Content="All Tasks" IsSelected="True"/>
+                <ComboBoxItem Content="Not Started"/>
+                <ComboBoxItem Content="In Progress"/>
+                <ComboBoxItem Content="Completed"/>
+                <ComboBoxItem Content="Overdue"/>
+            </ComboBox>
+            
+            <Button Content="Refresh" Width="80" Height="30" Margin="20,0,0,0" 
+                    Background="#27ae60" Foreground="White" Click="BtnRefresh_Click"/>
+        </StackPanel>
+
+        <!-- Tasks DataGrid -->
+        <DataGrid x:Name="dgProjectTasks" Grid.Row="2" AutoGenerateColumns="False"
+                  IsReadOnly="True" SelectionMode="Single" 
+                  GridLinesVisibility="All" HeadersVisibility="All"
+                  AlternatingRowBackground="#f8f9fa" RowBackground="White"
+                  MouseDoubleClick="dgProjectTasks_MouseDoubleClick">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Task Name" Binding="{Binding TaskName}" Width="200"/>
+                <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="300"/>
+                <DataGridTextColumn Header="Assigned To" Binding="{Binding AssignedMembers}" Width="150"/>
+                <DataGridTextColumn Header="Deadline" Binding="{Binding Deadline, StringFormat=dd/MM/yyyy}" Width="100"/>
+                <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="100"/>
+                <DataGridTextColumn Header="Created Date" Binding="{Binding DateCreated, StringFormat=dd/MM/yyyy}" Width="120"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Action Buttons -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
+            <Button Content="View Task Details" Width="150" Height="35" Margin="10" 
+                    Background="#3498db" Foreground="White" Click="BtnViewTaskDetails_Click"/>
+            <Button Content="Close" Width="100" Height="35" Margin="10" 
+                    Background="#95a5a6" Foreground="White" Click="BtnClose_Click"/>
+        </StackPanel>
+    </Grid>
+</Window> 

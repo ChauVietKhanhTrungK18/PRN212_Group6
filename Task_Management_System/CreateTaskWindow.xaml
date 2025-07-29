@@ -43,13 +43,12 @@
                                  Height="80" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
 
                         <TextBlock Grid.Row="2" Grid.Column="0" Text="Deadline:" FontWeight="Bold" Margin="0,5"/>
-                        <DatePicker x:Name="dpDeadline" Grid.Row="2" Grid.Column="1" Margin="10,5"/>
+                        <DatePicker x:Name="dpDeadline" Grid.Row="2" Grid.Column="1" Margin="10,5" 
+                                    SelectedDateChanged="dpDeadline_SelectedDateChanged"/>
 
-                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Status:" FontWeight="Bold" Margin="0,5"/>
-                        <ComboBox x:Name="cbStatus" Grid.Row="3" Grid.Column="1" Margin="10,5">
-                            <ComboBoxItem Content="Not Started" IsSelected="True"/>
-                            <ComboBoxItem Content="In Progress"/>
-                        </ComboBox>
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Status (Auto):" FontWeight="Bold" Margin="0,5"/>
+                        <TextBlock x:Name="txtStatusPreview" Grid.Row="3" Grid.Column="1" Margin="10,5" 
+                                   Text="Will be determined automatically" FontSize="12" Foreground="#666" VerticalAlignment="Center"/>
                     </Grid>
                 </GroupBox>
 

@@ -5,40 +5,31 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Task_Management_System"
         mc:Ignorable="d"
-        Title="Create Project" Height="450" Width="400">
-    <Grid Background="#f4f6fa" Margin="10,10,10,-6">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="160"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+        Title="Create Project" Height="700" Width="500" WindowStartupLocation="CenterScreen" ResizeMode="CanResize">
+    <Grid Background="#f4f6fa" Margin="20">
+        <StackPanel Margin="10,20,10,20">
+            <TextBlock Text="Create Project" FontSize="28" FontWeight="Bold" Margin="0,0,0,30" HorizontalAlignment="Center"/>
 
-        <StackPanel Margin="10,20,10,20" Grid.ColumnSpan="2">
-            <TextBlock Text="Create Project" FontSize="28" FontWeight="Bold" Margin="0,0,0,20"/>
+            <TextBlock Text="Project Name:" FontWeight="Bold" Margin="0,0,0,5"/>
+            <TextBox x:Name="txtProjectName" Height="30" Margin="0,0,0,15"/>
 
-            <TextBlock Text="Project Name:" FontWeight="Bold"/>
-            <TextBox x:Name="txtProjectName" Width="280" Margin="0,10,0,10"/>
+            <TextBlock Text="Description:" FontWeight="Bold" Margin="0,0,0,5"/>
+            <TextBox x:Name="txtDescription" Height="80" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" Margin="0,0,0,15"/>
 
-            <TextBlock Text="Description:" FontWeight="Bold"/>
-            <TextBox x:Name="txtDescription" Width="280" Height="60" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" Margin="0,10,0,10"/>
+            <TextBlock Text="Start Date:" FontWeight="Bold" Margin="0,0,0,5"/>
+            <DatePicker x:Name="dpStartDate" Height="30" Margin="0,0,0,15" 
+                        SelectedDateChanged="dpStartDate_SelectedDateChanged"/>
 
-            <TextBlock Text="Start Date:" FontWeight="Bold"/>
-            <DatePicker x:Name="dpStartDate" Width="280" Margin="0,10,0,10"/>
+            <TextBlock Text="End Date:" FontWeight="Bold" Margin="0,0,0,5"/>
+            <DatePicker x:Name="dpEndDate" Height="30" Margin="0,0,0,15" 
+                        SelectedDateChanged="dpEndDate_SelectedDateChanged"/>
 
-            <TextBlock Text="End Date:" FontWeight="Bold"/>
-            <DatePicker x:Name="dpEndDate" Width="280" Margin="0,10,0,10"/>
+            <TextBlock Text="Project Status (Auto-determined):" FontWeight="Bold" Margin="0,0,0,5"/>
+            <TextBlock x:Name="txtStatusPreview" Text="Not Started" FontSize="12" Foreground="#666" Margin="0,0,0,30"/>
 
-            <TextBlock Text="Status:" FontWeight="Bold"/>
-            <ComboBox x:Name="cbStatus" Width="280" Margin="0,10,0,20">
-                <ComboBoxItem Content="Not Started" IsSelected="True"/>
-                <ComboBoxItem Content="In Progress"/>
-                <ComboBoxItem Content="Completed"/>
-                <ComboBoxItem Content="On Hold"/>
-                <ComboBoxItem Content="Cancelled"/>
-            </ComboBox>
-
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button Content="Create Project" Width="120" Margin="5" Click="BtnCreateProject_Click"/>
-                <Button Content="Cancel" Width="120" Margin="5" Click="BtnCancel_Click"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
+                <Button Content="Create Project" Width="120" Height="35" Margin="10" Background="#4CAF50" Foreground="White" FontWeight="Bold" Click="BtnCreateProject_Click"/>
+                <Button Content="Cancel" Width="120" Height="35" Margin="10" Background="#f44336" Foreground="White" FontWeight="Bold" Click="BtnCancel_Click"/>
             </StackPanel>
         </StackPanel>
     </Grid>

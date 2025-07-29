@@ -63,5 +63,9 @@ namespace TMS_BLL.Service
         {
             return _projectMemberRepository.GetAll().Where(pm => pm.ProjectId == projectId);
         }
+        public IEnumerable<ProjectMember> GetProjectsByUserId(int userId)
+        {
+            return _projectMemberRepository.GetAll().Where(pm => pm.UserId == userId);
+        }
     }
 }

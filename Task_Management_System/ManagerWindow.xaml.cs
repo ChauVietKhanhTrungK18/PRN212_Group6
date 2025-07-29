@@ -88,6 +88,11 @@ namespace Task_Management_System
         {
             try
             {
+                if (dgProjects == null)
+                {
+                    return;
+                }
+
                 if (_allProjects == null || !_allProjects.Any())
                 {
                     dgProjects.ItemsSource = null;
@@ -96,13 +101,25 @@ namespace Task_Management_System
 
                 var filteredProjects = _allProjects.AsQueryable();
 
-                string searchText = txtSearch.Text.Trim().ToLower();
+                // Apply search filter
+                string searchText = txtSearch?.Text?.Trim().ToLower() ?? "";
                 if (!string.IsNullOrEmpty(searchText))
                 {
                     filteredProjects = filteredProjects.Where(p =>
                         p.ProjectName.ToLower().Contains(searchText) ||
                         p.Description.ToLower().Contains(searchText));
                 }
+
+                // Apply status filter
+                if (cbStatusFilter != null && cbStatusFilter.SelectedItem is ComboBoxItem selectedItem)
+                {
+                    string selectedStatus = selectedItem.Content.ToString();
+                    if (selectedStatus != "All Projects")
+                    {
+                        filteredProjects = filteredProjects.Where(p => p.Status == selectedStatus);
+                    }
+                }
+
                 dgProjects.ItemsSource = filteredProjects.ToList();
             }
             catch (Exception ex)
@@ -112,6 +129,11 @@ namespace Task_Management_System
         }
 
         private void txtSearch_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            ApplyFilters();
+        }
+
+        private void cbStatusFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ApplyFilters();
         }

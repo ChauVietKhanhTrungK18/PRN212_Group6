@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using TMS_BLL.IService;
 using TMS_DAL.Model;
 using Task_Management_System.Models;
@@ -44,6 +45,12 @@ namespace Task_Management_System
             _userService = App.ServiceProvider.GetRequiredService<IUserService>();
             _taskAssignmentService = App.ServiceProvider.GetRequiredService<ITaskAssignmentService>();
 
+            // Initialize collections
+            _myTasks = new List<ProjectTask>();
+            _myProjects = new List<Project>();
+            _myNotifications = new List<Notification>();
+            _myAttachments = new List<AttachmentViewModel>();
+
             LoadData();
         }
 
@@ -51,18 +58,19 @@ namespace Task_Management_System
         {
             try
             {
-                // Load current user
                 _currentUser = _userService.GetById(_currentUserId);
                 if (_currentUser != null)
                 {
                     txtWelcomeMessage.Text = $"Welcome, {_currentUser.FullName}!";
                 }
 
-                // Load all data
-                LoadMyTasks();
-                LoadMyProjects();
-                LoadMyNotifications();
-                LoadMyAttachments();
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    LoadMyTasks();
+                    LoadMyProjects();
+                    LoadMyNotifications();
+                    //LoadMyAttachments();
+                }), System.Windows.Threading.DispatcherPriority.Loaded);
             }
             catch (Exception ex)
             {
@@ -76,36 +84,73 @@ namespace Task_Management_System
         {
             try
             {
-                // Get tasks assigned to current user
-                _myTasks = _taskAssignmentService.GetAssignedTasks(_currentUserId).ToList();
+                var assignedTasks = _taskAssignmentService.GetAssignedTasks(_currentUserId);
+                if (assignedTasks != null)
+                {
+                    var tasks = assignedTasks.ToList();
+                    
+                    // Auto-update task status to Overdue if past deadline and not completed
+                    var currentDate = DateTime.Today;
+                    var updatedTasks = new List<ProjectTask>();
+                    
+                    foreach (var task in tasks)
+                    {
+                        if (task.Status != "Completed" && currentDate > task.Deadline)
+                        {
+                            // Update task status to Overdue
+                            task.Status = "Overdue";
+                            try
+                            {
+                                _taskService.Update(task);
+                            }
+                            catch (Exception updateEx)
+                            {
+                                System.Diagnostics.Debug.WriteLine($"Error updating task status to Overdue: {updateEx.Message}");
+                            }
+                        }
+                        updatedTasks.Add(task);
+                    }
+                    
+                    _myTasks = updatedTasks;
+                    
+                    // Apply filters to display data
+                    ApplyTaskFilters();
+                }
+                else
+                {
+                    _myTasks = new List<ProjectTask>();
+                    ApplyTaskFilters();
+                }
 
                 // Update task overview
                 UpdateTaskOverview();
-
-                // Apply filters
-                ApplyTaskFilters();
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error loading tasks: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _myTasks = new List<ProjectTask>();
+                ApplyTaskFilters();
+                UpdateTaskOverview();
             }
         }
 
         private void UpdateTaskOverview()
         {
-            if (_myTasks != null)
-            {
-                txtTotalTasks.Text = _myTasks.Count.ToString();
-                txtInProgressTasks.Text = _myTasks.Count(t => t.Status == "In Progress").ToString();
-                txtCompletedTasks.Text = _myTasks.Count(t => t.Status == "Completed").ToString();
-                txtOverdueTasks.Text = _myTasks.Count(t => t.Deadline < DateTime.Today && t.Status != "Completed").ToString();
-            }
+            txtTotalTasks.Text = _myTasks.Count.ToString();
+            txtInProgressTasks.Text = _myTasks.Count(t => t.Status == "In Progress").ToString();
+            txtCompletedTasks.Text = _myTasks.Count(t => t.Status == "Completed").ToString();
+            txtOverdueTasks.Text = _myTasks.Count(t => t.Status == "Overdue").ToString();
         }
 
         private void ApplyTaskFilters()
         {
             try
             {
+                if (dgMyTasks == null || _myTasks == null)
+                {
+                    return;
+                }
+
                 var filteredTasks = _myTasks.AsEnumerable();
 
                 // Apply search filter
@@ -127,7 +172,31 @@ namespace Task_Management_System
                     }
                 }
 
-                dgMyTasks.ItemsSource = filteredTasks.ToList();
+                // Create anonymous objects with ProjectName for display
+                var currentDate = DateTime.Today;
+                var tasksWithProject = filteredTasks.Select(task =>
+                {
+                    var project = _projectService.GetById(task.ProjectId);
+                    var canMarkCompleted = task.Status == "In Progress" && currentDate <= task.Deadline;
+                    
+                    // Debug logging
+                    System.Diagnostics.Debug.WriteLine($"Task: {task.TaskName}, Status: {task.Status}, Deadline: {task.Deadline}, CanMarkCompleted: {canMarkCompleted}");
+                    
+                    return new
+                    {
+                        TaskId = task.TaskId,
+                        TaskName = task.TaskName,
+                        Description = task.Description,
+                        Deadline = task.Deadline,
+                        Status = task.Status,
+                        DateCreated = task.DateCreated,
+                        ProjectId = task.ProjectId,
+                        ProjectName = project?.ProjectName ?? "Unknown Project",
+                        CanMarkCompleted = canMarkCompleted // Only show button if In Progress and not overdue
+                    };
+                }).ToList();
+
+                dgMyTasks.ItemsSource = tasksWithProject;
             }
             catch (Exception ex)
             {
@@ -152,13 +221,19 @@ namespace Task_Management_System
 
         private void BtnUpdateTaskStatus_Click(object sender, RoutedEventArgs e)
         {
-            if (dgMyTasks.SelectedItem is ProjectTask selectedTask)
+            if (dgMyTasks.SelectedItem != null)
             {
                 try
                 {
-                    var updateStatusWindow = new UpdateTaskStatusWindow(selectedTask.TaskId);
-                    updateStatusWindow.ShowDialog();
-                    LoadMyTasks(); // Reload data after status update
+                    var selectedTask = dgMyTasks.SelectedItem;
+                    var taskId = selectedTask.GetType().GetProperty("TaskId")?.GetValue(selectedTask);
+                    
+                    if (taskId != null)
+                    {
+                        var updateStatusWindow = new UpdateTaskStatusWindow((int)taskId);
+                        updateStatusWindow.ShowDialog();
+                        LoadMyTasks(); // Reload data after status update
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -173,11 +248,18 @@ namespace Task_Management_System
 
         private void BtnViewTaskDetails_Click(object sender, RoutedEventArgs e)
         {
-            if (dgMyTasks.SelectedItem is ProjectTask selectedTask)
+            if (dgMyTasks.SelectedItem != null)
             {
                 try
                 {
-                    MessageBox.Show($"Task Details:\n\nName: {selectedTask.TaskName}\nDescription: {selectedTask.Description}\nStatus: {selectedTask.Status}\nDeadline: {selectedTask.Deadline:dd/MM/yyyy}", 
+                    var selectedTask = dgMyTasks.SelectedItem;
+                    var taskName = selectedTask.GetType().GetProperty("TaskName")?.GetValue(selectedTask)?.ToString();
+                    var projectName = selectedTask.GetType().GetProperty("ProjectName")?.GetValue(selectedTask)?.ToString();
+                    var description = selectedTask.GetType().GetProperty("Description")?.GetValue(selectedTask)?.ToString();
+                    var status = selectedTask.GetType().GetProperty("Status")?.GetValue(selectedTask)?.ToString();
+                    var deadline = selectedTask.GetType().GetProperty("Deadline")?.GetValue(selectedTask);
+
+                    MessageBox.Show($"Task Details:\n\nName: {taskName}\nProject: {projectName}\nDescription: {description}\nStatus: {status}\nDeadline: {deadline:dd/MM/yyyy}", 
                         "Task Details", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 catch (Exception ex)
@@ -196,6 +278,65 @@ namespace Task_Management_System
             BtnViewTaskDetails_Click(sender, e);
         }
 
+        private void BtnMarkTaskCompleted_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var button = sender as Button;
+                var dataContext = button?.DataContext;
+                
+                if (dataContext != null)
+                {
+                    var taskId = dataContext.GetType().GetProperty("TaskId")?.GetValue(dataContext);
+                    var deadline = dataContext.GetType().GetProperty("Deadline")?.GetValue(dataContext);
+                    var status = dataContext.GetType().GetProperty("Status")?.GetValue(dataContext)?.ToString();
+                    
+                    if (taskId != null && deadline != null)
+                    {
+                        var currentDate = DateTime.Today;
+                        var taskDeadline = (DateTime)deadline;
+                        
+                        // Check if task is overdue
+                        if (currentDate > taskDeadline)
+                        {
+                            MessageBox.Show("Cannot mark task as completed because it is overdue!", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+                        }
+                        
+                        // Check if task status is In Progress
+                        if (status != "In Progress")
+                        {
+                            MessageBox.Show("Only tasks with 'In Progress' status can be marked as completed!", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+                        }
+                        
+                        var confirmation = MessageBox.Show("Are you sure you want to mark this task as completed?", 
+                            "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                        
+                        if (confirmation == MessageBoxResult.Yes)
+                        {
+                            // Update task status to completed
+                            var task = _taskService.GetById((int)taskId);
+                            if (task != null)
+                            {
+                                task.Status = "Completed";
+                                _taskService.Update(task);
+                                
+                                MessageBox.Show("Task marked as completed successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                                
+                                // Refresh the task list
+                                LoadMyTasks();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error marking task as completed: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
         #endregion
 
         #region Projects Management
@@ -205,40 +346,53 @@ namespace Task_Management_System
             try
             {
                 // Get projects where current user is a member
-                var projectMembers = _projectMemberService.GetMembersByProjectId(_currentUserId);
-                var projectIds = projectMembers.Select(pm => pm.ProjectId).ToList();
-                _myProjects = _projectService.GetAll().Where(p => projectIds.Contains(p.ProjectId)).ToList();
+                var projectMembers = _projectMemberService.GetProjectsByUserId(_currentUserId);
+                if (projectMembers != null && projectMembers.Any())
+                {
+                    var projectIds = projectMembers.Select(pm => pm.ProjectId).ToList();
+                    var projects = _projectService.GetAll().Where(p => projectIds.Contains(p.ProjectId)).ToList();
+                    _myProjects = projects;
+                    // Apply filters to display data
+                    ApplyProjectFilters();
+                }
+                else
+                {
+                    _myProjects = new List<Project>();
+                    ApplyProjectFilters();
+                }
 
                 // Update project overview
                 UpdateProjectOverview();
-
-                // Apply filters
-                ApplyProjectFilters();
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error loading projects: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _myProjects = new List<Project>();
+                ApplyProjectFilters();
+                UpdateProjectOverview();
             }
         }
 
         private void UpdateProjectOverview()
         {
-            if (_myProjects != null)
-            {
-                txtTotalProjects.Text = _myProjects.Count.ToString();
-                txtActiveProjects.Text = _myProjects.Count(p => p.Status == "Active").ToString();
-                txtCompletedProjects.Text = _myProjects.Count(p => p.Status == "Completed").ToString();
-            }
+            txtTotalProjects.Text = _myProjects.Count.ToString();
+            txtActiveProjects.Text = _myProjects.Count(p => p.Status == "In Progress").ToString();
+            txtCompletedProjects.Text = _myProjects.Count(p => p.Status == "Completed").ToString();
         }
 
         private void ApplyProjectFilters()
         {
             try
             {
+                if (dgMyProjects == null || _myProjects == null)
+                {
+                    return;
+                }
+
                 var filteredProjects = _myProjects.AsEnumerable();
 
                 // Apply search filter
-                if (!string.IsNullOrEmpty(txtSearchProjects.Text))
+                if (!string.IsNullOrEmpty(txtSearchProjects?.Text))
                 {
                     string searchTerm = txtSearchProjects.Text.ToLower();
                     filteredProjects = filteredProjects.Where(p => 
@@ -246,7 +400,25 @@ namespace Task_Management_System
                         p.Description.ToLower().Contains(searchTerm));
                 }
 
-                dgMyProjects.ItemsSource = filteredProjects.ToList();
+                // Create anonymous objects with ManagerName for display
+                var projectsWithManager = filteredProjects.Select(project =>
+                {
+                    var manager = _userService.GetById(project.ManagerId);
+                    return new
+                    {
+                        ProjectId = project.ProjectId,
+                        ProjectName = project.ProjectName,
+                        Description = project.Description,
+                        StartDate = project.StartDate,
+                        EndDate = project.EndDate,
+                        Status = project.Status,
+                        DateCreated = project.DateCreated,
+                        ManagerId = project.ManagerId,
+                        ManagerName = manager?.FullName ?? "Unknown"
+                    };
+                }).ToList();
+
+                dgMyProjects.ItemsSource = projectsWithManager;
             }
             catch (Exception ex)
             {
@@ -266,11 +438,19 @@ namespace Task_Management_System
 
         private void BtnViewProjectDetails_Click(object sender, RoutedEventArgs e)
         {
-            if (dgMyProjects.SelectedItem is Project selectedProject)
+            if (dgMyProjects.SelectedItem != null)
             {
                 try
                 {
-                    MessageBox.Show($"Project Details:\n\nName: {selectedProject.ProjectName}\nDescription: {selectedProject.Description}\nStatus: {selectedProject.Status}\nStart Date: {selectedProject.StartDate:dd/MM/yyyy}\nEnd Date: {selectedProject.EndDate:dd/MM/yyyy}", 
+                    var selectedProject = dgMyProjects.SelectedItem;
+                    var projectName = selectedProject.GetType().GetProperty("ProjectName")?.GetValue(selectedProject)?.ToString();
+                    var description = selectedProject.GetType().GetProperty("Description")?.GetValue(selectedProject)?.ToString();
+                    var status = selectedProject.GetType().GetProperty("Status")?.GetValue(selectedProject)?.ToString();
+                    var startDate = selectedProject.GetType().GetProperty("StartDate")?.GetValue(selectedProject);
+                    var endDate = selectedProject.GetType().GetProperty("EndDate")?.GetValue(selectedProject);
+                    var managerName = selectedProject.GetType().GetProperty("ManagerName")?.GetValue(selectedProject)?.ToString();
+
+                    MessageBox.Show($"Project Details:\n\nName: {projectName}\nDescription: {description}\nStatus: {status}\nStart Date: {startDate:dd/MM/yyyy}\nEnd Date: {endDate:dd/MM/yyyy}\nManager: {managerName}", 
                         "Project Details", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 catch (Exception ex)
@@ -286,21 +466,44 @@ namespace Task_Management_System
 
         private void BtnViewProjectTasks_Click(object sender, RoutedEventArgs e)
         {
-            if (dgMyProjects.SelectedItem is Project selectedProject)
+            try
             {
-                try
+                var button = sender as Button;
+                var dataContext = button?.DataContext;
+                
+                if (dataContext != null)
                 {
-                    var manageTasksWindow = new ManageTasksWindow(selectedProject.ProjectId);
-                    manageTasksWindow.ShowDialog();
+                    var projectId = dataContext.GetType().GetProperty("ProjectId")?.GetValue(dataContext);
+                    
+                    if (projectId != null)
+                    {
+                        var viewProjectTasksWindow = new ViewProjectTasksWindow((int)projectId);
+                        viewProjectTasksWindow.ShowDialog();
+                    }
                 }
-                catch (Exception ex)
+                else
                 {
-                    MessageBox.Show($"Error viewing project tasks: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    // Fallback to selected item if button context is null
+                    if (dgMyProjects.SelectedItem != null)
+                    {
+                        var selectedProject = dgMyProjects.SelectedItem;
+                        var projectId = selectedProject.GetType().GetProperty("ProjectId")?.GetValue(selectedProject);
+                        
+                        if (projectId != null)
+                        {
+                            var viewProjectTasksWindow = new ViewProjectTasksWindow((int)projectId);
+                            viewProjectTasksWindow.ShowDialog();
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Please select a project to view tasks.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
                 }
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("Please select a project to view tasks.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show($"Error viewing project tasks: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -317,12 +520,22 @@ namespace Task_Management_System
         {
             try
             {
-                _myNotifications = _notificationService.GetNotificationsByUserId(_currentUserId).ToList();
+                var notifications = _notificationService.GetNotificationsByUserId(_currentUserId);
+                if (notifications != null)
+                {
+                    _myNotifications = notifications.ToList();
+                }
+                else
+                {
+                    _myNotifications = new List<Notification>();
+                }
                 ApplyNotificationFilters();
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error loading notifications: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _myNotifications = new List<Notification>();
+                ApplyNotificationFilters();
             }
         }
 
@@ -330,6 +543,11 @@ namespace Task_Management_System
         {
             try
             {
+                if (dgNotifications == null || _myNotifications == null)
+                {
+                    return;
+                }
+
                 var filteredNotifications = _myNotifications.AsEnumerable();
 
                 // Apply search filter
@@ -468,98 +686,113 @@ namespace Task_Management_System
 
         #region Attachments Management
 
-        private void LoadMyAttachments()
-        {
-            try
-            {
-                // Get attachments uploaded by current user
-                var attachments = _attachmentService.GetAll().Where(a => a.UploadedByUserId == _currentUserId).ToList();
-                _myAttachments = attachments.Select(a => new AttachmentViewModel(a)).ToList();
+        //private void LoadMyAttachments()
+        //{
+        //    try
+        //    {
+        //        // Get attachments uploaded by current user
+        //        var allAttachments = _attachmentService.GetAll();
+        //        if (allAttachments != null)
+        //        {
+        //            var attachments = allAttachments.Where(a => a.UploadedByUserId == _currentUserId).ToList();
+        //            _myAttachments = attachments.Select(a => new AttachmentViewModel(a)).ToList();
+        //        }
+        //        else
+        //        {
+        //            _myAttachments = new List<AttachmentViewModel>();
+        //        }
 
-                ApplyAttachmentFilters();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error loading attachments: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
+        //        ApplyAttachmentFilters();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show($"Error loading attachments: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        //        _myAttachments = new List<AttachmentViewModel>();
+        //        ApplyAttachmentFilters();
+        //    }
+        //}
 
-        private void ApplyAttachmentFilters()
-        {
-            try
-            {
-                var filteredAttachments = _myAttachments.AsEnumerable();
+        //private void ApplyAttachmentFilters()
+        //{
+        //    try
+        //    {
+        //        if (dgAttachments == null || _myAttachments == null)
+        //        {
+        //            return;
+        //        }
 
-                // Apply search filter
-                if (!string.IsNullOrEmpty(txtSearchAttachments.Text))
-                {
-                    string searchTerm = txtSearchAttachments.Text.ToLower();
-                    filteredAttachments = filteredAttachments.Where(a => 
-                        a.FileName.ToLower().Contains(searchTerm));
-                }
+        //        var filteredAttachments = _myAttachments.AsEnumerable();
 
-                dgAttachments.ItemsSource = filteredAttachments.ToList();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error applying attachment filters: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
+        //        // Apply search filter
+        //        if (!string.IsNullOrEmpty(txtSearchAttachments.Text))
+        //        {
+        //            string searchTerm = txtSearchAttachments.Text.ToLower();
+        //            filteredAttachments = filteredAttachments.Where(a => 
+        //                a.FileName.ToLower().Contains(searchTerm));
+        //        }
 
-        private void txtSearchAttachments_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
-        {
-            ApplyAttachmentFilters();
-        }
+        //        dgAttachments.ItemsSource = filteredAttachments.ToList();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show($"Error applying attachment filters: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        //    }
+        //}
 
-        private void BtnRefreshAttachments_Click(object sender, RoutedEventArgs e)
-        {
-            LoadMyAttachments();
-        }
+        //private void txtSearchAttachments_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        //{
+        //    ApplyAttachmentFilters();
+        //}
 
-        private void BtnDownloadAttachment_Click(object sender, RoutedEventArgs e)
-        {
-            if (dgAttachments.SelectedItem is AttachmentViewModel selectedAttachment)
-            {
-                try
-                {
-                    MessageBox.Show($"Download functionality for '{selectedAttachment.FileName}' will be implemented.", 
-                        "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Error downloading attachment: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }
-            else
-            {
-                MessageBox.Show("Please select an attachment to download.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-        }
+        //private void BtnRefreshAttachments_Click(object sender, RoutedEventArgs e)
+        //{
+        //    LoadMyAttachments();
+        //}
 
-        private void BtnViewAttachmentDetails_Click(object sender, RoutedEventArgs e)
-        {
-            if (dgAttachments.SelectedItem is AttachmentViewModel selectedAttachment)
-            {
-                try
-                {
-                    MessageBox.Show($"Attachment Details:\n\nFile Name: {selectedAttachment.FileName}\nRelated To: {selectedAttachment.RelatedTo}\nUpload Date: {selectedAttachment.DateUploaded:dd/MM/yyyy}\nFile Size: {selectedAttachment.FileSize}\nUploaded By: {selectedAttachment.UploadedBy}", 
-                        "Attachment Details", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Error viewing attachment details: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }
-            else
-            {
-                MessageBox.Show("Please select an attachment to view details.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-        }
+        //private void BtnDownloadAttachment_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if (dgAttachments.SelectedItem is AttachmentViewModel selectedAttachment)
+        //    {
+        //        try
+        //        {
+        //            MessageBox.Show($"Download functionality for '{selectedAttachment.FileName}' will be implemented.", 
+        //                "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            MessageBox.Show($"Error downloading attachment: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        MessageBox.Show("Please select an attachment to download.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+        //    }
+        //}
 
-        private void dgAttachments_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            BtnViewAttachmentDetails_Click(sender, e);
-        }
+        //private void BtnViewAttachmentDetails_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if (dgAttachments.SelectedItem is AttachmentViewModel selectedAttachment)
+        //    {
+        //        try
+        //        {
+        //            MessageBox.Show($"Attachment Details:\n\nFile Name: {selectedAttachment.FileName}\nRelated To: {selectedAttachment.RelatedTo}\nUpload Date: {selectedAttachment.DateUploaded:dd/MM/yyyy}\nFile Size: {selectedAttachment.FileSize}\nUploaded By: {selectedAttachment.UploadedBy}", 
+        //                "Attachment Details", MessageBoxButton.OK, MessageBoxImage.Information);
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            MessageBox.Show($"Error viewing attachment details: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        MessageBox.Show("Please select an attachment to view details.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+        //    }
+        //}
+
+        //private void dgAttachments_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        //{
+        //    BtnViewAttachmentDetails_Click(sender, e);
+        //}
 
         #endregion
 
@@ -569,8 +802,10 @@ namespace Task_Management_System
         {
             try
             {
-                MessageBox.Show("Profile management feature will be implemented in the next phase.", 
-                    "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                var updateProfileWindow = new UpdateProfileWindow(_currentUser);
+                updateProfileWindow.ShowDialog();
+                
+                LoadData();
             }
             catch (Exception ex)
             {

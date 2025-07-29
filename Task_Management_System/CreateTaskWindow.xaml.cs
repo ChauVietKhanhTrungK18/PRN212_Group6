@@ -52,6 +52,9 @@ namespace Task_Management_System
 
                 // Set default deadline to tomorrow
                 dpDeadline.SelectedDate = DateTime.Today.AddDays(1);
+                
+                // Initialize status preview
+                UpdateStatusPreview();
             }
             catch (Exception ex)
             {
@@ -82,7 +85,7 @@ namespace Task_Management_System
             string taskName = txtTaskName.Text.Trim();
             string description = txtDescription.Text.Trim();
             DateTime? deadline = dpDeadline.SelectedDate;
-            string status = cbStatus.Text;
+            DateTime currentDate = DateTime.Today;
 
             // Validation
             if (string.IsNullOrEmpty(taskName))
@@ -106,17 +109,19 @@ namespace Task_Management_System
                 return;
             }
 
-            if (deadline < DateTime.Today)
+            // Validate deadline >= current date
+            if (deadline < currentDate)
             {
                 MessageBox.Show("Deadline cannot be in the past.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                 dpDeadline.Focus();
                 return;
             }
 
-            if (string.IsNullOrEmpty(status))
+            // Validate deadline <= project end date
+            if (_project != null && deadline > _project.EndDate)
             {
-                MessageBox.Show("Please select a status.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                cbStatus.Focus();
+                MessageBox.Show($"Deadline cannot be after project end date ({_project.EndDate:dd/MM/yyyy}).", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                dpDeadline.Focus();
                 return;
             }
 
@@ -126,6 +131,9 @@ namespace Task_Management_System
                 MessageBox.Show("Please select at least one member to assign the task.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
+
+            // Automatically determine status based on project dates and current date
+            string status = DetermineTaskStatus((DateTime)deadline, currentDate);
 
             try
             {
@@ -159,13 +167,13 @@ namespace Task_Management_System
                     {
                         var memberIds = selectedMembers.Select(m => m.User.UserId).ToList();
                         _taskAssignmentService.AssignTaskToMembers(taskId, memberIds);
-                        MessageBox.Show($"Task '{taskName}' created successfully and assigned to {selectedMembers.Count} member(s)!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                        MessageBox.Show($"Task '{taskName}' created successfully with status: {status} and assigned to {selectedMembers.Count} member(s)!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                     catch (Exception assignmentEx)
                     {
                         // If there's a database column error in assignment, still show success but warn about assignment
                         System.Diagnostics.Debug.WriteLine($"Error assigning task to members: {assignmentEx.Message}");
-                        MessageBox.Show($"Task '{taskName}' created successfully, but there was an issue assigning members to the task.\n\nError: {assignmentEx.Message}", 
+                        MessageBox.Show($"Task '{taskName}' created successfully with status: {status}, but there was an issue assigning members to the task.\n\nError: {assignmentEx.Message}", 
                             "Task Created with Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
                     this.Close();
@@ -186,9 +194,64 @@ namespace Task_Management_System
             }
         }
 
+        private string DetermineTaskStatus(DateTime deadline, DateTime currentDate)
+        {
+            // If current date is before project start date -> Not Started
+            if (_project != null && currentDate < _project.StartDate)
+            {
+                return "Not Started";
+            }
+            // If current date is between project start date and end date -> In Progress
+            else if (_project != null && currentDate >= _project.StartDate && currentDate <= _project.EndDate)
+            {
+                return "In Progress";
+            }
+            // Default to In Progress for other cases
+            else
+            {
+                return "In Progress";
+            }
+        }
+
         private void BtnCancel_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
+        }
+
+        private void dpDeadline_SelectedDateChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            UpdateStatusPreview();
+        }
+
+        private void UpdateStatusPreview()
+        {
+            if (_project != null && dpDeadline.SelectedDate.HasValue)
+            {
+                DateTime currentDate = DateTime.Today;
+                DateTime deadline = dpDeadline.SelectedDate.Value;
+                string status = DetermineTaskStatus(deadline, currentDate);
+                
+                txtStatusPreview.Text = status;
+                
+                // Update color based on status
+                switch (status)
+                {
+                    case "Not Started":
+                        txtStatusPreview.Foreground = System.Windows.Media.Brushes.Orange;
+                        break;
+                    case "In Progress":
+                        txtStatusPreview.Foreground = System.Windows.Media.Brushes.Green;
+                        break;
+                    default:
+                        txtStatusPreview.Foreground = System.Windows.Media.Brushes.Gray;
+                        break;
+                }
+            }
+            else
+            {
+                txtStatusPreview.Text = "Will be determined automatically";
+                txtStatusPreview.Foreground = System.Windows.Media.Brushes.Gray;
+            }
         }
     }
 } 

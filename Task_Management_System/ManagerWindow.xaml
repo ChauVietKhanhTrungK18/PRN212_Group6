@@ -72,8 +72,16 @@
                     
                     <StackPanel Grid.Column="0" Orientation="Horizontal">
                         <TextBlock Text="Search Projects:" VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="Bold"/>
-                        <TextBox x:Name="txtSearch" Width="300" Height="30" TextChanged="txtSearch_TextChanged" 
-                                 VerticalAlignment="Center" Margin="0,0,20,0"/>
+                        <TextBox x:Name="txtSearch" Width="250" Height="30" TextChanged="txtSearch_TextChanged" 
+                                 VerticalAlignment="Center" Margin="0,0,15,0"/>
+                        
+                        <TextBlock Text="Status Filter:" VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="Bold"/>
+                        <ComboBox x:Name="cbStatusFilter" Width="120" Height="30" SelectionChanged="cbStatusFilter_SelectionChanged">
+                            <ComboBoxItem Content="All Projects" IsSelected="True"/>
+                            <ComboBoxItem Content="Not Started"/>
+                            <ComboBoxItem Content="In Progress"/>
+                            <ComboBoxItem Content="Completed"/>
+                        </ComboBox>
                     </StackPanel>
                     
                     <StackPanel Grid.Column="1" Orientation="Horizontal">

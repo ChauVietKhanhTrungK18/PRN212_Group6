@@ -94,16 +94,16 @@ namespace Task_Management_System
                     return;
                 }
 
-                // Validate password strength
-                if (!IsPasswordStrong(newPassword))
-                {
-                    MessageBox.Show("Password does not meet the requirements. Please ensure your password:\n\n• Is at least 8 characters long\n• Contains at least one uppercase letter\n• Contains at least one lowercase letter\n• Contains at least one number\n• Contains at least one special character", 
-                        "Password Requirements", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    txtNewPassword.Clear();
-                    txtConfirmPassword.Clear();
-                    txtNewPassword.Focus();
-                    return;
-                }
+                //// Validate password strength
+                //if (!IsPasswordStrong(newPassword))
+                //{
+                //    MessageBox.Show("Password does not meet the requirements. Please ensure your password:\n\n• Is at least 8 characters long\n• Contains at least one uppercase letter\n• Contains at least one lowercase letter\n• Contains at least one number\n• Contains at least one special character", 
+                //        "Password Requirements", MessageBoxButton.OK, MessageBoxImage.Warning);
+                //    txtNewPassword.Clear();
+                //    txtConfirmPassword.Clear();
+                //    txtNewPassword.Focus();
+                //    return;
+                //}
 
                 // Check if new password is same as current
                 if (HashPassword(newPassword) == _currentUser.PasswordHash)
